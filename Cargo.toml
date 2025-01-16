@@ -1,0 +1,9 @@
+[package]
+name = "nes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bitflags = "2.4"
+sdl2 = "0.34.0"
+rand = "=0.7.3"
