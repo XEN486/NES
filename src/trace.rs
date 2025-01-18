@@ -13,16 +13,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ADC {}", format!("#${:02X}", address));
                 
@@ -41,22 +33,14 @@ impl<'a> CPU<'a> {
             0x65 => { // ADC ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ADC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -82,15 +66,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ADC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -109,22 +85,14 @@ impl<'a> CPU<'a> {
             0x6d => { // ADC ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ADC {}", format!("${:04X}", mem_addr));
                 
@@ -150,15 +118,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ADC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -184,15 +144,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ADC {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -218,15 +170,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ADC {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -252,15 +196,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ADC {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -285,16 +221,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("AND {}", format!("#${:02X}", address));
                 
@@ -313,22 +241,14 @@ impl<'a> CPU<'a> {
             0x25 => { // AND ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("AND {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -354,15 +274,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("AND {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -381,22 +293,14 @@ impl<'a> CPU<'a> {
             0x2d => { // AND ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("AND {}", format!("${:04X}", mem_addr));
                 
@@ -422,15 +326,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("AND {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -456,15 +352,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("AND {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -490,15 +378,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("AND {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -524,15 +404,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("AND {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -551,22 +423,14 @@ impl<'a> CPU<'a> {
             0x0a => { // ASL ACC
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Accumulator);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ASL {}", "A ");
                 
@@ -585,22 +449,14 @@ impl<'a> CPU<'a> {
             0x06 => { // ASL ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ASL {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -626,15 +482,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ASL {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -653,22 +501,14 @@ impl<'a> CPU<'a> {
             0x0e => { // ASL ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ASL {}", format!("${:04X}", mem_addr));
                 
@@ -694,15 +534,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ASL {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -727,16 +559,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Relative);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BCC {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
                 
@@ -761,16 +585,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Relative);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BCS {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
                 
@@ -795,16 +611,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Relative);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BEQ {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
                 
@@ -829,16 +637,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Relative);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BMI {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
                 
@@ -863,16 +663,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Relative);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BNE {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
                 
@@ -897,16 +689,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Relative);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BPL {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
                 
@@ -931,16 +715,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Relative);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BVC {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
                 
@@ -965,16 +741,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Relative);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BVS {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
                 
@@ -993,22 +761,14 @@ impl<'a> CPU<'a> {
             0x24 => { // BIT ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BIT {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -1027,22 +787,14 @@ impl<'a> CPU<'a> {
             0x2c => { // BIT ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BIT {}", format!("${:04X}", mem_addr));
                 
@@ -1061,22 +813,14 @@ impl<'a> CPU<'a> {
             0x00 => { // BRK IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("BRK {}", "");
                 
@@ -1095,22 +839,14 @@ impl<'a> CPU<'a> {
             0x18 => { // CLC IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CLC {}", "");
                 
@@ -1129,22 +865,14 @@ impl<'a> CPU<'a> {
             0xd8 => { // CLD IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CLD {}", "");
                 
@@ -1163,22 +891,14 @@ impl<'a> CPU<'a> {
             0x58 => { // CLI IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CLI {}", "");
                 
@@ -1197,22 +917,14 @@ impl<'a> CPU<'a> {
             0xb8 => { // CLV IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CLV {}", "");
                 
@@ -1231,22 +943,14 @@ impl<'a> CPU<'a> {
             0xea => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -1265,22 +969,14 @@ impl<'a> CPU<'a> {
             0x48 => { // PHA IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("PHA {}", "");
                 
@@ -1299,22 +995,14 @@ impl<'a> CPU<'a> {
             0x68 => { // PLA IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("PLA {}", "");
                 
@@ -1333,22 +1021,14 @@ impl<'a> CPU<'a> {
             0x08 => { // PHP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("PHP {}", "");
                 
@@ -1367,22 +1047,14 @@ impl<'a> CPU<'a> {
             0x28 => { // PLP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("PLP {}", "");
                 
@@ -1401,22 +1073,14 @@ impl<'a> CPU<'a> {
             0x40 => { // RTI IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("RTI {}", "");
                 
@@ -1435,22 +1099,14 @@ impl<'a> CPU<'a> {
             0x60 => { // RTS IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("RTS {}", "");
                 
@@ -1469,22 +1125,14 @@ impl<'a> CPU<'a> {
             0x38 => { // SEC IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SEC {}", "");
                 
@@ -1503,22 +1151,14 @@ impl<'a> CPU<'a> {
             0xf8 => { // SED IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SED {}", "");
                 
@@ -1537,22 +1177,14 @@ impl<'a> CPU<'a> {
             0x78 => { // SEI IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SEI {}", "");
                 
@@ -1571,22 +1203,14 @@ impl<'a> CPU<'a> {
             0xaa => { // TAX IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("TAX {}", "");
                 
@@ -1605,22 +1229,14 @@ impl<'a> CPU<'a> {
             0x8a => { // TXA IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("TXA {}", "");
                 
@@ -1639,22 +1255,14 @@ impl<'a> CPU<'a> {
             0xa8 => { // TAY IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("TAY {}", "");
                 
@@ -1673,22 +1281,14 @@ impl<'a> CPU<'a> {
             0x98 => { // TYA IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("TYA {}", "");
                 
@@ -1707,22 +1307,14 @@ impl<'a> CPU<'a> {
             0xba => { // TSX IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("TSX {}", "");
                 
@@ -1741,22 +1333,14 @@ impl<'a> CPU<'a> {
             0x9a => { // TXS IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("TXS {}", "");
                 
@@ -1781,16 +1365,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CMP {}", format!("#${:02X}", address));
                 
@@ -1809,22 +1385,14 @@ impl<'a> CPU<'a> {
             0xc5 => { // CMP ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CMP {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -1850,15 +1418,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CMP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -1877,22 +1437,14 @@ impl<'a> CPU<'a> {
             0xcd => { // CMP ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CMP {}", format!("${:04X}", mem_addr));
                 
@@ -1918,15 +1470,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CMP {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -1952,15 +1496,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CMP {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -1986,15 +1522,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CMP {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -2020,15 +1548,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CMP {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -2053,16 +1573,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CPX {}", format!("#${:02X}", address));
                 
@@ -2081,22 +1593,14 @@ impl<'a> CPU<'a> {
             0xe4 => { // CPX ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CPX {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -2115,22 +1619,14 @@ impl<'a> CPU<'a> {
             0xec => { // CPX ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CPX {}", format!("${:04X}", mem_addr));
                 
@@ -2155,16 +1651,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CPY {}", format!("#${:02X}", address));
                 
@@ -2183,22 +1671,14 @@ impl<'a> CPU<'a> {
             0xc4 => { // CPY ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CPY {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -2217,22 +1697,14 @@ impl<'a> CPU<'a> {
             0xcc => { // CPY ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("CPY {}", format!("${:04X}", mem_addr));
                 
@@ -2251,22 +1723,14 @@ impl<'a> CPU<'a> {
             0xc6 => { // DEC ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("DEC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -2292,15 +1756,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("DEC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -2319,22 +1775,14 @@ impl<'a> CPU<'a> {
             0xce => { // DEC ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("DEC {}", format!("${:04X}", mem_addr));
                 
@@ -2360,15 +1808,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("DEC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -2387,22 +1827,14 @@ impl<'a> CPU<'a> {
             0xca => { // DEX IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("DEX {}", "");
                 
@@ -2421,22 +1853,14 @@ impl<'a> CPU<'a> {
             0x88 => { // DEY IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("DEY {}", "");
                 
@@ -2455,22 +1879,14 @@ impl<'a> CPU<'a> {
             0xe8 => { // INX IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("INX {}", "");
                 
@@ -2489,22 +1905,14 @@ impl<'a> CPU<'a> {
             0xc8 => { // INY IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("INY {}", "");
                 
@@ -2529,16 +1937,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("EOR {}", format!("#${:02X}", address));
                 
@@ -2557,22 +1957,14 @@ impl<'a> CPU<'a> {
             0x45 => { // EOR ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("EOR {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -2598,15 +1990,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("EOR {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -2625,22 +2009,14 @@ impl<'a> CPU<'a> {
             0x4d => { // EOR ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("EOR {}", format!("${:04X}", mem_addr));
                 
@@ -2666,15 +2042,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("EOR {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -2700,15 +2068,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("EOR {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -2734,15 +2094,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("EOR {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -2768,15 +2120,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("EOR {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -2795,22 +2139,14 @@ impl<'a> CPU<'a> {
             0xe6 => { // INC ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("INC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -2836,15 +2172,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("INC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -2863,22 +2191,14 @@ impl<'a> CPU<'a> {
             0xee => { // INC ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("INC {}", format!("${:04X}", mem_addr));
                 
@@ -2904,15 +2224,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("INC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -2931,22 +2243,14 @@ impl<'a> CPU<'a> {
             0x4c => { // JMP ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("JMP {}", format!("${:04X}", mem_addr));
                 
@@ -2971,9 +2275,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Indirect);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
+                let _stored_value: u8 = self.mem_read(mem_addr);
                 let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
                 let jmp_addr = if address & 0x00FF == 0x00FF {
                     let lo = self.mem_read(address2);
                     let hi = self.mem_read(address2 & 0xFF00);
@@ -2981,7 +2284,6 @@ impl<'a> CPU<'a> {
                 } else {
                     self.mem_read_u16(address2)
                 };
-                
                 let instruction: String = format!("JMP {}", format!("(${:04x}) = {:04x}", address, jmp_addr));
                 
                 format!(
@@ -2999,22 +2301,14 @@ impl<'a> CPU<'a> {
             0x20 => { // JSR ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("JSR {}", format!("${:04X}", mem_addr));
                 
@@ -3039,16 +2333,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDA {}", format!("#${:02X}", address));
                 
@@ -3067,22 +2353,14 @@ impl<'a> CPU<'a> {
             0xa5 => { // LDA ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDA {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -3108,15 +2386,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDA {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3135,22 +2405,14 @@ impl<'a> CPU<'a> {
             0xad => { // LDA ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDA {}", format!("${:04X}", mem_addr));
                 
@@ -3176,15 +2438,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDA {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3210,15 +2464,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDA {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3244,15 +2490,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDA {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -3278,15 +2516,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDA {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -3311,16 +2541,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDX {}", format!("#${:02X}", address));
                 
@@ -3339,22 +2561,14 @@ impl<'a> CPU<'a> {
             0xa6 => { // LDX ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDX {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -3380,15 +2594,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDX {}", format!("${:02X},Y @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3407,22 +2613,14 @@ impl<'a> CPU<'a> {
             0xae => { // LDX ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDX {}", format!("${:04X}", mem_addr));
                 
@@ -3448,15 +2646,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDX {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3481,16 +2671,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDY {}", format!("#${:02X}", address));
                 
@@ -3509,22 +2691,14 @@ impl<'a> CPU<'a> {
             0xa4 => { // LDY ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDY {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -3550,15 +2724,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDY {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3577,22 +2743,14 @@ impl<'a> CPU<'a> {
             0xac => { // LDY ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDY {}", format!("${:04X}", mem_addr));
                 
@@ -3618,15 +2776,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LDY {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3645,22 +2795,14 @@ impl<'a> CPU<'a> {
             0x4a => { // LSR ACC
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Accumulator);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LSR {}", "A ");
                 
@@ -3679,22 +2821,14 @@ impl<'a> CPU<'a> {
             0x46 => { // LSR ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LSR {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -3720,15 +2854,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LSR {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3747,22 +2873,14 @@ impl<'a> CPU<'a> {
             0x4e => { // LSR ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LSR {}", format!("${:04X}", mem_addr));
                 
@@ -3788,15 +2906,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("LSR {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3821,16 +2931,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ORA {}", format!("#${:02X}", address));
                 
@@ -3849,22 +2951,14 @@ impl<'a> CPU<'a> {
             0x05 => { // ORA ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ORA {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -3890,15 +2984,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ORA {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3917,22 +3003,14 @@ impl<'a> CPU<'a> {
             0x0d => { // ORA ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ORA {}", format!("${:04X}", mem_addr));
                 
@@ -3958,15 +3036,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ORA {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -3992,15 +3062,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ORA {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4026,15 +3088,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ORA {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -4060,15 +3114,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ORA {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -4087,22 +3133,14 @@ impl<'a> CPU<'a> {
             0x2a => { // ROL ACC
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Accumulator);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROL {}", "A ");
                 
@@ -4121,22 +3159,14 @@ impl<'a> CPU<'a> {
             0x26 => { // ROL ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROL {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -4162,15 +3192,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROL {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4189,22 +3211,14 @@ impl<'a> CPU<'a> {
             0x2e => { // ROL ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROL {}", format!("${:04X}", mem_addr));
                 
@@ -4230,15 +3244,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROL {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4257,22 +3263,14 @@ impl<'a> CPU<'a> {
             0x6a => { // ROR ACC
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Accumulator);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROR {}", "A ");
                 
@@ -4291,22 +3289,14 @@ impl<'a> CPU<'a> {
             0x66 => { // ROR ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROR {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -4332,15 +3322,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROR {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4359,22 +3341,14 @@ impl<'a> CPU<'a> {
             0x7e => { // ROR ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROR {}", format!("${:04X}", mem_addr));
                 
@@ -4400,15 +3374,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ROR {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4433,16 +3399,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SBC {}", format!("#${:02X}", address));
                 
@@ -4461,22 +3419,14 @@ impl<'a> CPU<'a> {
             0xe5 => { // SBC ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SBC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -4502,15 +3452,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SBC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4529,22 +3471,14 @@ impl<'a> CPU<'a> {
             0xed => { // SBC ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SBC {}", format!("${:04X}", mem_addr));
                 
@@ -4570,15 +3504,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SBC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4604,15 +3530,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SBC {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4638,15 +3556,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SBC {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -4672,15 +3582,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SBC {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -4699,22 +3601,14 @@ impl<'a> CPU<'a> {
             0x85 => { // STA ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STA {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -4740,15 +3634,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STA {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4767,22 +3653,14 @@ impl<'a> CPU<'a> {
             0x8d => { // STA ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STA {}", format!("${:04X}", mem_addr));
                 
@@ -4808,15 +3686,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STA {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4842,15 +3712,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STA {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -4876,15 +3738,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STA {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -4910,15 +3764,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STA {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -4937,22 +3783,14 @@ impl<'a> CPU<'a> {
             0x86 => { // STX ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STX {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -4978,15 +3816,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STX {}", format!("${:02X},Y @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -5005,22 +3835,14 @@ impl<'a> CPU<'a> {
             0x8e => { // STX ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STX {}", format!("${:04X}", mem_addr));
                 
@@ -5039,22 +3861,14 @@ impl<'a> CPU<'a> {
             0x84 => { // STY ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STY {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -5080,15 +3894,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STY {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -5107,22 +3913,14 @@ impl<'a> CPU<'a> {
             0x8c => { // STY ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("STY {}", format!("${:04X}", mem_addr));
                 
@@ -5141,22 +3939,14 @@ impl<'a> CPU<'a> {
             0x1a => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5175,22 +3965,14 @@ impl<'a> CPU<'a> {
             0x3a => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5209,22 +3991,14 @@ impl<'a> CPU<'a> {
             0x5a => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5243,22 +4017,14 @@ impl<'a> CPU<'a> {
             0x7a => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5277,22 +4043,14 @@ impl<'a> CPU<'a> {
             0xda => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5311,22 +4069,14 @@ impl<'a> CPU<'a> {
             0xfa => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5345,22 +4095,14 @@ impl<'a> CPU<'a> {
             0x02 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5379,22 +4121,14 @@ impl<'a> CPU<'a> {
             0x12 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5413,22 +4147,14 @@ impl<'a> CPU<'a> {
             0x22 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5447,22 +4173,14 @@ impl<'a> CPU<'a> {
             0x32 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5481,22 +4199,14 @@ impl<'a> CPU<'a> {
             0x42 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5515,22 +4225,14 @@ impl<'a> CPU<'a> {
             0x52 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5549,22 +4251,14 @@ impl<'a> CPU<'a> {
             0x62 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5583,22 +4277,14 @@ impl<'a> CPU<'a> {
             0x72 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5617,22 +4303,14 @@ impl<'a> CPU<'a> {
             0x92 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5651,22 +4329,14 @@ impl<'a> CPU<'a> {
             0xb2 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5685,22 +4355,14 @@ impl<'a> CPU<'a> {
             0xd2 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5719,22 +4381,14 @@ impl<'a> CPU<'a> {
             0xf2 => { // NOP IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Implied);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("NOP {}", "");
                 
@@ -5759,16 +4413,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SKB {}", format!("#${:02X}", address));
                 
@@ -5793,16 +4439,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SKB {}", format!("#${:02X}", address));
                 
@@ -5827,16 +4465,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SKB {}", format!("#${:02X}", address));
                 
@@ -5861,16 +4491,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SKB {}", format!("#${:02X}", address));
                 
@@ -5895,16 +4517,8 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SKB {}", format!("#${:02X}", address));
                 
@@ -5923,22 +4537,14 @@ impl<'a> CPU<'a> {
             0x07 => { // SLO ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SLO {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -5964,15 +4570,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SLO {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -5991,22 +4589,14 @@ impl<'a> CPU<'a> {
             0x0f => { // SLO ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SLO {}", format!("${:04X}", mem_addr));
                 
@@ -6032,15 +4622,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SLO {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -6066,15 +4648,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SLO {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -6100,15 +4674,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SLO {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -6134,15 +4700,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SLO {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -6161,22 +4719,14 @@ impl<'a> CPU<'a> {
             0xe7 => { // ISC ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ISC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -6202,15 +4752,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ISC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -6229,22 +4771,14 @@ impl<'a> CPU<'a> {
             0xef => { // ISC ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ISC {}", format!("${:04X}", mem_addr));
                 
@@ -6270,15 +4804,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ISC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -6304,15 +4830,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ISC {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -6338,15 +4856,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ISC {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -6372,15 +4882,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("ISC {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 
@@ -6399,22 +4901,14 @@ impl<'a> CPU<'a> {
             0x47 => { // SRE ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SRE {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 
@@ -6440,15 +4934,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SRE {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -6467,22 +4953,14 @@ impl<'a> CPU<'a> {
             0x4f => { // SRE ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc + 0), self.mem_read(self.pc + 1), self.mem_read(self.pc + 2)];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let _address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _stored_value: u8 = self.mem_read(mem_addr);
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SRE {}", format!("${:04X}", mem_addr));
                 
@@ -6508,15 +4986,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SRE {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -6542,15 +5012,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SRE {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
                 
@@ -6576,15 +5038,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SRE {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 
@@ -6610,15 +5064,7 @@ impl<'a> CPU<'a> {
                 self.pc -= 1;
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
+                let _address2: u16 = self.mem_read_u16(self.pc + 1);
                 
                 let instruction: String = format!("SRE {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
                 

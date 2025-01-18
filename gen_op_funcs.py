@@ -12,45 +12,81 @@ def generate_rust_trace(csv_file_path, output_file_path):
             byte_count = int(row['bytes'])
 
             byte_values = [f"self.mem_read(self.pc + {i})" for i in range(byte_count)]
-            
+            addr_prefix = ''
+            addr2_prefix = ''
+            stored_prefix = ''
+            jmp_addr = ''
             if mode == 'IMM':
                 rust_mode = '&AddressingMode::Immediate'
+                addr2_prefix = '_'
+                stored_prefix = '_'
                 operands = 'format!("#${:02X}", address)'
             elif mode == 'ZP':
                 rust_mode = '&AddressingMode::ZeroPage'
+                addr_prefix = '_'
+                addr2_prefix = '_'
                 operands = 'format!("${:02X} = {:02X}", mem_addr, stored_value)'
             elif mode == 'ZPX':
                 rust_mode = '&AddressingMode::ZeroPageX'
+                addr2_prefix = '_'
                 operands = 'format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value)'
             elif mode == 'ZPY':
                 rust_mode = '&AddressingMode::ZeroPageY'
+                addr2_prefix = '_'
                 operands = 'format!("${:02X},Y @ {:02X} = {:02X}", address, mem_addr, stored_value)'
             elif mode == 'ABS':
                 rust_mode = '&AddressingMode::Absolute'
+                addr_prefix = '_'
+                addr2_prefix = '_'
+                stored_prefix = '_'
+                addr1_prefix = '_'
                 operands = 'format!("${:04X}", mem_addr)'
             elif mode == 'ABSX':
                 rust_mode = '&AddressingMode::AbsoluteX'
+                addr2_prefix = '_'
                 operands = 'format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value)'
             elif mode == 'ABSY':
                 rust_mode = '&AddressingMode::AbsoluteY'
+                addr2_prefix = '_'
                 operands = 'format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value)'
             elif mode == 'IND':
                 rust_mode = '&AddressingMode::Indirect'
+                jmp_addr = f'''let jmp_addr = if address & 0x00FF == 0x00FF {{
+                    let lo = self.mem_read(address2);
+                    let hi = self.mem_read(address2 & 0xFF00);
+                    (hi as u16) << 8 | (lo as u16)
+                }} else {{
+                    self.mem_read_u16(address2)
+                }};'''
+                
+                stored_prefix = '_'
                 operands = 'format!("(${:04x}) = {:04x}", address, jmp_addr)'
             elif mode == 'INDX':
                 rust_mode = '&AddressingMode::IndirectX'
+                addr2_prefix = '_'
                 operands = 'format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value)'
             elif mode == 'INDY':
                 rust_mode = '&AddressingMode::IndirectY'
+                addr2_prefix = '_'
                 operands = 'format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value)'
             elif mode == 'IMP':
                 rust_mode = '&AddressingMode::Implied'
+                addr_prefix = '_'
+                addr2_prefix = '_'
+                stored_prefix = '_'
+                
                 operands = '""'
             elif mode == 'ACC':
                 rust_mode = '&AddressingMode::Accumulator'
+                addr_prefix = '_'
+                addr2_prefix = '_'
+                stored_prefix = '_'
+                
                 operands = '"A "'
             elif mode == 'REL':
                 rust_mode = '&AddressingMode::Relative'
+                addr2_prefix = '_'
+                stored_prefix = '_'
                 operands = 'format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize))'
 
 
@@ -58,23 +94,15 @@ def generate_rust_trace(csv_file_path, output_file_path):
             0x{opcode[2:]} => {{ // {mnemonic} {mode}
                 let byte_values: Vec<u8> = vec![{', '.join(byte_values)}];
 
-                let address: u8 = self.mem_read(self.pc + 1);
+                let {addr_prefix}address: u8 = self.mem_read(self.pc + 1);
                 
                 self.pc += 1;
                 let mem_addr: u16 = self.get_operand_address({rust_mode});
                 self.pc -= 1;
                 
-                let stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc + 1);
-                
-                let jmp_addr = if address & 0x00FF == 0x00FF {{
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                }} else {{
-                    self.mem_read_u16(address2)
-                }};
-                
+                let {stored_prefix}stored_value: u8 = self.mem_read(mem_addr);
+                let {addr2_prefix}address2: u16 = self.mem_read_u16(self.pc + 1);
+                {jmp_addr}
                 let instruction: String = format!("{mnemonic} {{}}", {operands});
                 
                 format!(
@@ -187,12 +215,6 @@ def generate_rust_opmatch(csv_file_path, output_file_path):
             instructions.append(trace_template)
 
     rust_code = f"""// This was generated by a dumb python script! Don't edit!! //
-macro_rules! new_op {{
-    ($self:expr, $method:ident, $mode:expr, $pc_inc:expr) => {{{{
-        $self.$method($mode);
-        $self.pc += $pc_inc;
-    }}}};
-}}
 
 impl<'a> CPU<'a> {{
     pub fn opmatch(&mut self, op: u8) -> bool {{
