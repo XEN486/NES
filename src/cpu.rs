@@ -2,10 +2,6 @@ use bitflags::bitflags;
 use crate::interrupt::{Interrupt, NMI, BRK};
 use crate::bus::*;
 
-use std::fs::OpenOptions;
-use std::io::Write;
-
-
 bitflags! {
     #[derive(Debug)]
     pub struct StatusFlags: u8 {
@@ -121,9 +117,9 @@ impl<'a> CPU<'a> {
         match mode {
             AddressingMode::Immediate => self.pc,
             AddressingMode::ZeroPage => self.mem_read(self.pc) as u16,
-
+    
             AddressingMode::Absolute => self.mem_read_u16(self.pc),
-
+    
             AddressingMode::ZeroPageX => {
                 let pos = self.mem_read(self.pc);
                 let addr = pos.wrapping_add(self.registers.x) as u16;
@@ -134,7 +130,7 @@ impl<'a> CPU<'a> {
                 let addr = pos.wrapping_add(self.registers.y) as u16;
                 addr
             }
-
+    
             AddressingMode::AbsoluteX => {
                 let base = self.mem_read_u16(self.pc);
                 let addr = base.wrapping_add(self.registers.x as u16);
@@ -145,29 +141,60 @@ impl<'a> CPU<'a> {
                 let addr = base.wrapping_add(self.registers.y as u16);
                 addr
             }
-
+    
             AddressingMode::IndirectX => {
                 let base = self.mem_read(self.pc);
-
-                let ptr: u8 = (base as u8).wrapping_add(self.registers.x);
-                let lo = self.mem_read(ptr as u16);
-                let hi = self.mem_read(ptr.wrapping_add(1) as u16);
+                let ptr = base.wrapping_add(self.registers.x) as u16;
+                let lo = self.mem_read(ptr);
+                let hi = self.mem_read(ptr.wrapping_add(1));
                 (hi as u16) << 8 | (lo as u16)
             }
             AddressingMode::IndirectY => {
                 let base = self.mem_read(self.pc);
-
                 let lo = self.mem_read(base as u16);
-                let hi = self.mem_read((base as u8).wrapping_add(1) as u16);
+                let hi = self.mem_read((base as u16).wrapping_add(1));
                 let deref_base = (hi as u16) << 8 | (lo as u16);
                 let deref = deref_base.wrapping_add(self.registers.y as u16);
                 deref
             }
-
-            AddressingMode::Relative => (self.pc as i32 + self.mem_read(self.pc) as i8 as i32) as u16,
+    
+            AddressingMode::Relative => {
+                let offset = self.mem_read(self.pc) as i8;
+                (self.pc as i32 + offset as i32) as u16
+            }
+    
             AddressingMode::Implied => self.pc,
             AddressingMode::Accumulator => self.pc,
             AddressingMode::Indirect => self.mem_read_u16(self.pc),
+        }
+    }
+    fn pagecross_penalty(&mut self, mode: &AddressingMode) -> u8 {
+        match mode {
+            AddressingMode::AbsoluteX => {
+                let base = self.get_operand_address(mode);
+                let effective = base.wrapping_add(self.registers.x as u16);
+                (base & 0xFF00 != effective & 0xFF00) as u8
+            }
+            AddressingMode::AbsoluteY => {
+                let base = self.get_operand_address(mode);
+                let effective = base.wrapping_add(self.registers.y as u16);
+                (base & 0xFF00 != effective & 0xFF00) as u8
+            }
+            AddressingMode::Relative => {
+                let offset = self.mem_read(self.pc) as i8 as i16; // Signed offset
+                let new_pc = self.pc.wrapping_add(1).wrapping_add(offset as u16);
+                (self.pc.wrapping_add(1) & 0xFF00 != new_pc & 0xFF00) as u8
+            }
+            AddressingMode::IndirectY => {
+                let addr = self.get_operand_address(mode);
+                let base = self.mem_read(addr);
+                let lo = self.mem_read(base as u16) as u16;
+                let hi = self.mem_read(base.wrapping_add(1) as u16) as u16;
+                let deref_base = (hi << 8) | lo;
+                let effective = deref_base.wrapping_add(self.registers.y as u16);
+                (deref_base & 0xFF00 != effective & 0xFF00) as u8
+            }
+            _ => 0,
         }
     }
 
@@ -190,7 +217,7 @@ impl<'a> CPU<'a> {
         self.pc = self.mem_read_u16(interrupt.vector_address);
     }
     
-    fn step_with_callback<F>(&mut self, mut callback: F) -> bool where F: FnMut(&mut CPU) {
+    pub fn step_with_callback<F>(&mut self, mut callback: F) -> u8 where F: FnMut(&mut CPU) {
         callback(self);
 
         if let Some(_nmi) = self.bus.poll_nmi_status() {
@@ -200,13 +227,16 @@ impl<'a> CPU<'a> {
         let opcode = self.mem_read(self.pc);
         self.pc = self.pc.wrapping_add(1);
         
-        let cycles = self.get_cycles_for_opcode(opcode);
+        let mut cycles = self.get_cycles_for_opcode(opcode);
+        if self.opmatch(opcode) {
+            cycles += 1; // branch succeeded
+        }
+        
         self.bus.tick(cycles);
-
-        self.opmatch(opcode)
+        cycles
     }
 
-    fn step(&mut self) -> bool {
+    pub fn step(&mut self) -> u8 {
         self.step_with_callback(|_| {})
     }
 
@@ -217,36 +247,6 @@ impl<'a> CPU<'a> {
         self.registers.s = 0xFD;
         self.status = 0b0010_0100;
         self.pc = self.mem_read_u16(0xFFFC);
-    }
-
-    pub fn run_with_callback<F>(&mut self, trace: bool, mut callback: F) where F: FnMut(&mut CPU) {
-        let mut log_file = None;
-        
-        if trace {
-            log_file = Some(OpenOptions::new()
-                .create(true)
-                .write(true)
-                .truncate(true)
-                .open("cpu.log")
-                .unwrap()
-            );
-        }
-        
-        loop {
-            if trace {
-                if let Some(ref mut file) = log_file {
-                    writeln!(file, "{}", self.trace()).unwrap();
-                }
-            }
-    
-            if self.step_with_callback(&mut callback) {
-                break;
-            }
-        }
-    }
-
-    pub fn run(&mut self, trace: bool) {
-        self.run_with_callback(trace, |_| {});
     }
 }
 

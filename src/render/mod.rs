@@ -1,12 +1,15 @@
 pub mod frame;
 pub mod palette;
+pub mod rect;
 
+use crate::cartridge::Mirroring;
 use crate::ppu::PPU;
 use frame::Frame;
+use rect::Rect;
 
-fn bg_palette(ppu: &PPU, tile_column: usize, tile_row : usize) -> [u8;4] {
-    let attr_table_idx = tile_row / 4 * 8 +  tile_column / 4;
-    let attr_byte = ppu.vram[0x3c0 + attr_table_idx];
+fn bg_palette(ppu: &PPU, attribute_table: &[u8], tile_column: usize, tile_row : usize) -> [u8;4] {
+    let attr_table_idx = (tile_row / 4) * 8 + (tile_column / 4);
+    let attr_byte = attribute_table[attr_table_idx];
 
     let palette_idx = match (tile_column %4 / 2, tile_row % 4 / 2) {
         (0,0) => attr_byte & 0b11,
@@ -30,36 +33,70 @@ fn sprite_palette(ppu: &PPU, palette_idx: u8) -> [u8;4] {
     ]
 }
 
-pub fn render(ppu: &PPU, frame: &mut Frame) {
-    // draw background
-    let bank = ppu.control.bknd_pattern_address();
+fn render_nametable(ppu: &PPU, frame: &mut Frame, nametable: &[u8], viewport: Rect, shift_x: isize, shift_y: isize) {
+    let bank = ppu.control.background_pattern_address();
+    let attribute_table = &nametable[0x3c0.. 0x400];
 
     for i in 0..0x3c0 {
-        let tile = ppu.vram[i] as u16;
         let tile_column = i % 32;
         let tile_row = i / 32;
-        let tile = &ppu.chr_rom[(bank + tile * 16) as usize..=(bank + tile * 16 + 15) as usize];
-        let palette = bg_palette(ppu, tile_column, tile_row);
-
+        let tile_idx = nametable[i] as u16;
+        let tile = &ppu.chr_rom[(bank + tile_idx * 16) as usize..=(bank + tile_idx * 16 + 15) as usize];
+        let palette = bg_palette(ppu, attribute_table, tile_column, tile_row);
+ 
         for y in 0..=7 {
             let mut upper = tile[y];
             let mut lower = tile[y + 8];
-
+ 
             for x in (0..=7).rev() {
                 let value = (1 & lower) << 1 | (1 & upper);
                 upper = upper >> 1;
                 lower = lower >> 1;
-                let rgb = match value {
-                    0 => palette::SYSTEM_PALETTE[ppu.palette_table[0] as usize],
-                    1 => palette::SYSTEM_PALETTE[palette[1] as usize],
-                    2 => palette::SYSTEM_PALETTE[palette[2] as usize],
-                    3 => palette::SYSTEM_PALETTE[palette[3] as usize],
-                    _ => panic!("can't be"),
+                let mut rgb = match value {
+                    0 => palette::SYSTEM_PALETTE[ppu.palette_table[0] as usize % 64],
+                    1 => palette::SYSTEM_PALETTE[palette[1] as usize % 64],
+                    2 => palette::SYSTEM_PALETTE[palette[2] as usize % 64],
+                    3 => palette::SYSTEM_PALETTE[palette[3] as usize % 64],
+                    _ => panic!("[RENDERER] impossible palette colour in nametable"),
                 };
-                frame.set_pixel(tile_column * 8 + x, tile_row * 8 + y, rgb)
+                let pixel_x = tile_column * 8 + x;
+                let pixel_y = tile_row * 8 + y;
+ 
+                if pixel_x >= viewport.x1 && pixel_x < viewport.x2 && pixel_y >= viewport.y1 && pixel_y < viewport.y2 {
+                    frame.apply_emphasis(&mut rgb, ppu.mask.emphasize());
+                    frame.apply_greyscale(&mut rgb, ppu.mask.is_greyscale());
+
+                    frame.set_pixel((shift_x + pixel_x as isize) as usize, (shift_y + pixel_y as isize) as usize, rgb);
+                }
             }
         }
     }
+ }
+
+pub fn render(ppu: &PPU, frame: &mut Frame) {
+    let scroll_x = (ppu.scroll.scroll_x) as usize;
+    let scroll_y = (ppu.scroll.scroll_y) as usize;
+
+    let (main_nametable, second_nametable) = match (&ppu.mirroring, ppu.control.nametable_address()) {
+        (Mirroring::Vertical, 0x2000) | (Mirroring::Vertical, 0x2800) | (Mirroring::Horizontal, 0x2000) | (Mirroring::Horizontal, 0x2400) => {
+            (&ppu.vram[0..0x400], &ppu.vram[0x400..0x800])
+        }
+        (Mirroring::Vertical, 0x2400) | (Mirroring::Vertical, 0x2C00) | (Mirroring::Horizontal, 0x2800) | (Mirroring::Horizontal, 0x2C00) => {
+            ( &ppu.vram[0x400..0x800], &ppu.vram[0..0x400])
+        }
+        (_,_) => {
+            panic!("[RENDERER] unsupported mirroring type {:?}", ppu.mirroring);
+        }
+    };
+
+    render_nametable(ppu, frame, main_nametable, Rect::new(scroll_x, scroll_y, 256, 240 ),-(scroll_x as isize), -(scroll_y as isize));
+
+    if scroll_x > 0 {
+        render_nametable(ppu, frame, second_nametable, Rect::new(0, 0, scroll_x, 240),(256 - scroll_x) as isize, 0);
+    } else if scroll_y > 0 {
+        render_nametable(ppu, frame, second_nametable, Rect::new(0, 0, 256, scroll_y),0, (240 - scroll_y) as isize);
+    }
+
 
     // draw sprites
     for i in (0..ppu.oam_data.len()).step_by(4).rev() {
@@ -78,10 +115,10 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
             false
         };
 
-        let pallette_idx = ppu.oam_data[i + 2] & 0b11;
-        let sprite_palette = sprite_palette(ppu, pallette_idx);
+        let palette_idx = ppu.oam_data[i + 2] & 0b11;
+        let sprite_palette = sprite_palette(ppu, palette_idx);
        
-        let bank: u16 = ppu.control.sprt_pattern_address();
+        let bank: u16 = ppu.control.sprite_pattern_address();
         let tile = &ppu.chr_rom[(bank + tile_idx * 16) as usize..=(bank + tile_idx * 16 + 15) as usize];
 
         for y in 0..=7 {
@@ -91,13 +128,17 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
                 let value = (1 & lower) << 1 | (1 & upper);
                 upper = upper >> 1;
                 lower = lower >> 1;
-                let rgb = match value {
+                let mut rgb = match value {
                     0 => continue 'pixel, // skip pixel
-                    1 => palette::SYSTEM_PALETTE[sprite_palette[1] as usize],
-                    2 => palette::SYSTEM_PALETTE[sprite_palette[2] as usize],
-                    3 => palette::SYSTEM_PALETTE[sprite_palette[3] as usize],
-                    _ => panic!("can't be"),
+                    1 => palette::SYSTEM_PALETTE[sprite_palette[1] as usize % 64],
+                    2 => palette::SYSTEM_PALETTE[sprite_palette[2] as usize % 64],
+                    3 => palette::SYSTEM_PALETTE[sprite_palette[3] as usize % 64],
+                    _ => panic!("[RENDERER] impossible palette colour in sprite"),
                 };
+
+                frame.apply_emphasis(&mut rgb, ppu.mask.emphasize());
+                frame.apply_greyscale(&mut rgb, ppu.mask.is_greyscale());
+
                 match (flip_horizontal, flip_vertical) {
                     (false, false) => frame.set_pixel(tile_x + x, tile_y + y, rgb),
                     (true, false) => frame.set_pixel(tile_x + 7 - x, tile_y + y, rgb),

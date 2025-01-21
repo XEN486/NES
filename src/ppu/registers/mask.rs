@@ -13,12 +13,6 @@ bitflags! {
     }
 }
 
-pub enum Color {
-    Red,
-    Green,
-    Blue
-}
-
 impl MaskRegister {
     pub fn new() -> MaskRegister {
         MaskRegister::from_bits_truncate(0b00000000)
@@ -44,22 +38,8 @@ impl MaskRegister {
         self.contains(MaskRegister::ShowSprites)
     }
 
-    pub fn emphasize(&self) -> Vec<Color> {
-        let mut result = Vec::<Color>::new();
-
-        if self.contains(MaskRegister::EmphasiseRed) {
-            result.push(Color::Red);
-        }
-
-        if self.contains(MaskRegister::EmphasiseGreen) {
-            result.push(Color::Green);
-        }
-
-        if self.contains(MaskRegister::EmphasiseBlue) {
-            result.push(Color::Blue);
-        }
-
-        result
+    pub fn emphasize(&self) -> (bool, bool, bool) {
+        (self.contains(MaskRegister::EmphasiseRed), self.contains(MaskRegister::EmphasiseGreen), self.contains(MaskRegister::EmphasiseBlue))
     }
 
     pub fn update(&mut self, data: u8) {

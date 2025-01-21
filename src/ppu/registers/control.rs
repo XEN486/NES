@@ -18,6 +18,16 @@ impl ControlRegister {
         ControlRegister::from_bits_truncate(0b00000000)
     }
 
+    pub fn nametable_address(&self) -> u16 {
+        match self.bits() & 0b11 {
+            0 => 0x2000,
+            1 => 0x2400,
+            2 => 0x2800,
+            3 => 0x2c00,
+            _ => panic!("[PPU] impossible nametable"),
+        }
+    }
+
     pub fn vram_address_increment(&self) -> u8 {
         if !self.contains(ControlRegister::VRAMAddIncrement) {
             1
@@ -26,7 +36,7 @@ impl ControlRegister {
         }
     }
 
-    pub fn sprt_pattern_address(&self) -> u16 {
+    pub fn sprite_pattern_address(&self) -> u16 {
         if !self.contains(ControlRegister::SpritePatternAddress) {
             0
         } else {
@@ -34,7 +44,7 @@ impl ControlRegister {
         }
     }
 
-    pub fn bknd_pattern_address(&self) -> u16 {
+    pub fn background_pattern_address(&self) -> u16 {
         if !self.contains(ControlRegister::BackgroundPatternAddress) {
             0
         } else {

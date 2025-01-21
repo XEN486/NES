@@ -94,10 +94,13 @@ impl PPU {
             }
 
             // Reserved
-            0x3000 ..= 0x3eff => panic!("[PPU] address space 0x3000 -> 0x3eff shouldn't be used. address requested: 0x{:04x}", addr),
+            0x3000 ..= 0x3eff => {
+                println!("[PPU] address space 0x3000 -> 0x3eff shouldn't be used. address requested: 0x{:04x}", addr);
+                0
+            }
             
             // Palette Table
-            0x3f00 ..= 0x3fff => self.palette_table[(addr - 0x3f00) as usize],
+            0x3f00 ..= 0x3fff => self.palette_table[(addr - 0x3f00) as usize % 32],
 
             // Unknown
             _ => panic!("[PPU] unexpected access to mirrored space {}", addr),
@@ -129,7 +132,7 @@ impl PPU {
                 self.palette_table[(add_mirror - 0x3f00) as usize] = value;
             }
 
-            0x3f00 ..= 0x3fff => self.palette_table[(addr - 0x3f00) as usize] = value,
+            0x3f00 ..= 0x3fff => self.palette_table[(addr - 0x3f00) as usize % 32] = value,
             _ => println!("[PPU] unexpected access to mirror space"),
         }
 
@@ -171,12 +174,18 @@ impl PPU {
     pub fn tick(&mut self, cycles: u8) -> bool {
         self.cycles += cycles as usize;
         if self.cycles >= 341 {
+            let is_hit = self.is_sprite_0_hit(self.cycles);
+            if is_hit {
+                self.status.set_sprite_zero_hit(true);
+            }
+
             self.cycles -= 341;
             self.scanline += 1;
 
             if self.scanline == 241 {
                 self.status.set_vblank_status(true);
                 self.status.set_sprite_zero_hit(false);
+
                 if self.control.generate_vblank_nmi() {
                     self.nmi_interrupt = Some(1);
                 }
@@ -191,5 +200,11 @@ impl PPU {
             }
         }
         false
+    }
+
+    fn is_sprite_0_hit(&self, cycle: usize) -> bool {
+        let y = self.oam_data[0] as usize;
+        let x = self.oam_data[3] as usize;
+        (y == self.scanline as usize) && x <= cycle && self.mask.show_sprites()
     }
 }

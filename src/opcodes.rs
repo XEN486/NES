@@ -17,6 +17,13 @@ impl<'a> CPU<'a> {
         false
     }
 
+    fn anc(&mut self, mode: &AddressingMode) -> bool {
+        self.and(mode);
+        self.set_flag_else_clear(StatusFlags::Carry, self.status & StatusFlags::Negative.bits() != 0);
+
+        false
+    }
+
     fn and(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
         let value = self.mem_read(addr);
@@ -30,30 +37,35 @@ impl<'a> CPU<'a> {
 
     fn asl(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
-        let value = self.mem_read(addr);
-
-        self.mem_write(addr, value << 1 & 0b1111_1110);
+        let mut value = self.mem_read(addr);
+    
         self.set_flag_else_clear(StatusFlags::Carry, (value & 0x80) != 0);
-        self.set_flag_else_clear(StatusFlags::Zero, (value << 1) == 0);
+        value <<= 1;  // Shift left
+        self.mem_write(addr, value);
+    
+        self.set_flag_else_clear(StatusFlags::Zero, value == 0);
         self.set_flag_else_clear(StatusFlags::Negative, (value & 0x80) != 0);
-
+    
         false
     }
-
+    
     fn asl_accumulator(&mut self, _mode: &AddressingMode) -> bool {
-        let value = self.registers.a;
-        self.registers.a = (value << 1) & 0b1111_1110;
-
+        let mut value = self.registers.a;
+    
         self.set_flag_else_clear(StatusFlags::Carry, (value & 0x80) != 0);
-        self.set_flag_else_clear(StatusFlags::Zero, self.registers.a == 0);
-        self.set_flag_else_clear(StatusFlags::Negative, (self.registers.a & 0x80) != 0);
-
+        value <<= 1;  // Shift left
+        self.registers.a = value;
+    
+        self.set_flag_else_clear(StatusFlags::Zero, value == 0);
+        self.set_flag_else_clear(StatusFlags::Negative, (value & 0x80) != 0);
+    
         false
     }
 
     fn bcc(&mut self, mode: &AddressingMode) -> bool {
         if self.status & StatusFlags::Carry.bits() == 0 {
             self.pc = self.get_operand_address(mode);
+            return true;
         }
 
         false
@@ -62,6 +74,7 @@ impl<'a> CPU<'a> {
     fn bcs(&mut self, mode: &AddressingMode) -> bool {
         if self.status & StatusFlags::Carry.bits() != 0 {
             self.pc = self.get_operand_address(mode);
+            return true;
         }
 
         false
@@ -70,6 +83,7 @@ impl<'a> CPU<'a> {
     fn beq(&mut self, mode: &AddressingMode) -> bool {
         if self.status & StatusFlags::Zero.bits() != 0 {
             self.pc = self.get_operand_address(mode);
+            return true;
         }
 
         false
@@ -90,6 +104,7 @@ impl<'a> CPU<'a> {
     fn bmi(&mut self, mode: &AddressingMode) -> bool {
         if self.status & StatusFlags::Negative.bits() != 0 {
             self.pc = self.get_operand_address(mode);
+            return true;
         }
 
         false
@@ -98,6 +113,7 @@ impl<'a> CPU<'a> {
     fn bne(&mut self, mode: &AddressingMode) -> bool {
         if self.status & StatusFlags::Zero.bits() == 0 {
             self.pc = self.get_operand_address(mode);
+            return true;
         }
 
         false
@@ -106,6 +122,7 @@ impl<'a> CPU<'a> {
     fn bpl(&mut self, mode: &AddressingMode) -> bool {
         if self.status & StatusFlags::Negative.bits() == 0 {
             self.pc = self.get_operand_address(mode);
+            return true;
         }
 
         false
@@ -113,7 +130,7 @@ impl<'a> CPU<'a> {
 
     fn brk(&mut self, _mode: &AddressingMode) -> bool {
         self.pc += 1;
-        
+
         if self.status & StatusFlags::InterruptDisable.bits() == 0 {
             self.interrupt(BRK);
         }
@@ -124,6 +141,7 @@ impl<'a> CPU<'a> {
     fn bvc(&mut self, mode: &AddressingMode) -> bool {
         if self.status & StatusFlags::Overflow.bits() == 0 {
             self.pc = self.get_operand_address(mode);
+            return true;
         }
 
         false
@@ -132,6 +150,7 @@ impl<'a> CPU<'a> {
     fn bvs(&mut self, mode: &AddressingMode) -> bool {
         if self.status & StatusFlags::Overflow.bits() != 0 {
             self.pc = self.get_operand_address(mode);
+            return true;
         }
 
         false
@@ -274,7 +293,7 @@ impl<'a> CPU<'a> {
 
     fn jmp(&mut self, mode: &AddressingMode) -> bool {
         let addr: u16 = self.get_operand_address(mode);
-        self.pc = addr - 2; // 1 word added on after this function runs
+        self.pc = addr.wrapping_sub(2); // 1 word added on after this function runs
 
         false
     }
@@ -283,7 +302,7 @@ impl<'a> CPU<'a> {
         let addr = self.get_operand_address(mode);
 
         self.stack_push_u16(self.pc + 2 - 1);
-        self.pc = addr - 2; // 1 word added on after this function runs
+        self.pc = addr.wrapping_sub(2); // 1 word added on after this function runs
 
         false
     }
@@ -350,11 +369,11 @@ impl<'a> CPU<'a> {
     fn ora(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
         let value = self.mem_read(addr);
-        
+    
         self.registers.a |= value;
         self.set_flag_else_clear(StatusFlags::Zero, self.registers.a == 0);
         self.set_flag_else_clear(StatusFlags::Negative, (self.registers.a & 0x80) != 0);
-
+    
         false
     }
 
@@ -387,34 +406,31 @@ impl<'a> CPU<'a> {
     fn rol(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
         let mut value = self.mem_read(addr);
-        let old_b7 = value & 1;
-
+        
+        let old_b7 = (value & 0x80) != 0;
         value <<= 1;
+
         if self.status & StatusFlags::Carry.bits() != 0 {
             value |= 0b0000_0001;
-        } else {
-            value &= 0b1111_1110;
         }
-
+    
         self.mem_write(addr, value);
-        self.set_flag_else_clear(StatusFlags::Carry, old_b7 == 1);
+        self.set_flag_else_clear(StatusFlags::Carry, old_b7);
         self.set_flag_else_clear(StatusFlags::Zero, value == 0);
         self.set_flag_else_clear(StatusFlags::Negative, (value & 0x80) != 0);
-
+    
         false
     }
 
     fn rol_accumulator(&mut self, _mode: &AddressingMode) -> bool {
-        let old_b7 = self.registers.a & 1;
+        let old_b7 = (self.registers.a & 0x80) != 0;
 
         self.registers.a <<= 1;
         if self.status & StatusFlags::Carry.bits() != 0 {
             self.registers.a |= 0b0000_0001;
-        } else {
-            self.registers.a &= 0b1111_1110;
         }
 
-        self.set_flag_else_clear(StatusFlags::Carry, old_b7 == 1);
+        self.set_flag_else_clear(StatusFlags::Carry, old_b7);
         self.set_flag_else_clear(StatusFlags::Zero, self.registers.a == 0);
         self.set_flag_else_clear(StatusFlags::Negative, (self.registers.a & 0x80) != 0);
 
@@ -458,6 +474,13 @@ impl<'a> CPU<'a> {
         false
     }
 
+    fn rra(&mut self, mode: &AddressingMode) -> bool {
+        self.ror(&mode);
+        self.adc(&mode);
+
+        false
+    }
+
     fn rti(&mut self, _mode: &AddressingMode) -> bool {
         self.status = self.stack_pop();
         self.clear_flag(StatusFlags::Break);
@@ -477,17 +500,18 @@ impl<'a> CPU<'a> {
     fn sbc(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
         let value = self.mem_read(addr);
-
         let carry = if self.status & StatusFlags::Carry.bits() != 0 { 0 } else { 1 };
-        let result = self.registers.a.wrapping_sub(value).wrapping_sub(carry);
-    
-        self.set_flag_else_clear(StatusFlags::Carry, self.registers.a >= value + carry);
-        self.set_flag_else_clear(StatusFlags::Overflow, ((self.registers.a ^ value) & (self.registers.a ^ result) & 0x80) != 0);
-    
-        self.registers.a = result;
+        
+        let result = (self.registers.a as u16).wrapping_sub(value as u16).wrapping_sub(carry as u16);
+        self.set_flag_else_clear(StatusFlags::Carry, result < 0x100);
+        
+        let result_u8 = result as u8;
+        self.set_flag_else_clear(StatusFlags::Overflow, ((self.registers.a ^ result_u8) & (self.registers.a ^ value) & 0x80) != 0);
+        
+        self.registers.a = result_u8;
         self.set_flag_else_clear(StatusFlags::Zero, self.registers.a == 0);
         self.set_flag_else_clear(StatusFlags::Negative, (self.registers.a & 0x80) != 0);
-
+    
         false
     }
 
