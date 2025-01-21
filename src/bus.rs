@@ -3,8 +3,6 @@ use crate::{cartridge::Rom, ppu::PPU};
 use crate::joypad::Joypad;
 use rand::Rng;
 
-use std::rc::Rc;
-use std::cell::RefCell;
 
 pub trait Mem {
     fn mem_read(&mut self, addr: u16) -> u8;

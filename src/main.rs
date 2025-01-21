@@ -10,14 +10,12 @@ mod cpu_test;
 
 use bus::Bus;
 use cartridge::Rom;
-use cpal::StreamConfig;
 use cpu::CPU;
 use render::frame::Frame;
 use joypad::JoypadButton;
 use joypad::Joypad;
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-use cpal::{SampleFormat, Stream};
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
