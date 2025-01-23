@@ -135,14 +135,14 @@ impl Mem for Bus<'_> {
         let mut ram_corrupted = data;
 
         if self.corruption != 0 {
-            corrupted = corrupted.wrapping_add(rand::thread_rng().gen_range(0, self.corruption));
+            corrupted = corrupted.wrapping_add(rand::thread_rng().gen_range(0..self.corruption));
         }
 
         match addr {
             // RAM & RAM mirrors
             0x0000 ..= 0x1FFF => {
                 if self.ram_corruption != 0 {
-                    ram_corrupted = ram_corrupted.wrapping_pow(rand::thread_rng().gen_range(0, self.ram_corruption) as u32);
+                    ram_corrupted = ram_corrupted.wrapping_shr(rand::thread_rng().gen_range(0..self.ram_corruption) as u32);
                 }
                 let mirror_down_addr = addr & 0b11111111111;
                 self.cpu_vram[mirror_down_addr as usize] = ram_corrupted;

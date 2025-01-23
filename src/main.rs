@@ -15,24 +15,21 @@ use render::frame::Frame;
 use joypad::JoypadButton;
 use joypad::Joypad;
 
-use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::PixelFormatEnum;
 use std::time::{Duration, Instant};
 
-
 fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
     match keycode {
-        Keycode::Down => Some(JoypadButton::Down),
-        Keycode::Up => Some(JoypadButton::Up),
-        Keycode::Right => Some(JoypadButton::Right),
-        Keycode::Left => Some(JoypadButton::Left),
-        Keycode::Space => Some(JoypadButton::Select),
-        Keycode::Return => Some(JoypadButton::Start),
-        Keycode::A => Some(JoypadButton::A),
-        Keycode::S => Some(JoypadButton::B),
+        &Keycode::Down => Some(JoypadButton::Down),
+        &Keycode::Up => Some(JoypadButton::Up),
+        &Keycode::Right => Some(JoypadButton::Right),
+        &Keycode::Left => Some(JoypadButton::Left),
+        &Keycode::Space => Some(JoypadButton::Select),
+        &Keycode::Return => Some(JoypadButton::Start),
+        &Keycode::A => Some(JoypadButton::A),
+        &Keycode::S => Some(JoypadButton::B),
         _ => None,
     }
 }
@@ -58,33 +55,9 @@ fn main() {
         .unwrap();
 
     // load the game
-    let bytes: Vec<u8> = std::fs::read("smb.nes").unwrap();
+    let bytes: Vec<u8> = std::fs::read("dk.nes").unwrap();
     let rom = Rom::new(&bytes).unwrap();
     let mut frame = Frame::new();
-
-    let (tx, rx) = std::sync::mpsc::channel::<Vec<i16>>();
-    let host = cpal::default_host();
-    let default_output_device = host.default_output_device().expect("No output device available");
-    let default_output_format = default_output_device.default_output_config().unwrap();
-
-    let output_stream = default_output_device.build_output_stream(
-        &default_output_format.config(),
-        move |data: &mut [i16], _: &cpal::OutputCallbackInfo| {
-            if let Ok(samples) = rx.try_recv() {
-                for (i, sample) in samples.iter().enumerate() {
-                    if i < data.len() {
-                        data[i] = *sample;
-                    }
-                }
-            }
-        },
-        |err| {
-            eprintln!("Error in audio stream: {:?}", err);
-        },
-        None
-    ).unwrap();
-
-    output_stream.play().unwrap();
 
     let bus = Bus::new(rom, move |ppu, apu, joypad: &mut Joypad, corruption: &mut u8, ram_corruption: &mut u8| {
         render::render(ppu, &mut frame);
@@ -129,10 +102,6 @@ fn main() {
                 _ => {}
             }
         }
-
-        println!("{}", apu.buffer.len());
-        tx.send(apu.buffer.clone()).unwrap(); // have to clone or else i get 23782378273232 issues bro
-        apu.clear_buffer();
     });
 
     let mut cpu = CPU::new(bus);
