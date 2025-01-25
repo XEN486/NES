@@ -9,24 +9,28 @@ pub struct Rom {
     pub prg_rom: Vec<u8>,
     pub chr_rom: Vec<u8>,
     pub mapper: u8,
-    pub screen_mirroring: Mirroring,
+    pub mirroring: Mirroring,
 }
 
 impl Rom {
     pub fn new(raw: &Vec<u8>) -> Result<Rom, String> {
         if &raw[0..4] != [0x4E, 0x45, 0x53, 0x1A] {
-            return Err("[CART] only iNES 1.0 roms are supported!".to_string());
+            return Err("[CART] only iNES roms are supported!".to_string());
         }
 
         let mapper = (raw[7] & 0b1111_0000) | (raw[6] >> 4);
         let version = (raw[7] >> 2) & 0b11;
+        
         if version != 0 {
-            return Err("[CART] only iNES 1.0 roms are supported!".to_string());
+            println!("[CARTRIDGE] iNES 2.0 detected. Unsupported, but some games should work. Using mapper {}.", mapper);
+            //return Err("[CART] only iNES 1.0 roms are supported!".to_string());
+        } else {
+            println!("[CARTRIDGE] iNES 1.0. Using mapper {}.", mapper)
         }
 
         let four_screen = raw[6] & 0b1000 != 0;
         let vertical_mirroring = raw[6] & 0b1 != 0;
-        let screen_mirroring = match (four_screen, vertical_mirroring) {
+        let mirroring = match (four_screen, vertical_mirroring) {
             (true, _) => Mirroring::FourScreen,
             (false, true) => Mirroring::Vertical,
             (false, false) => Mirroring::Horizontal,
@@ -44,7 +48,7 @@ impl Rom {
             prg_rom: raw[prg_rom_start..(prg_rom_start + prg_rom_size)].to_vec(),
             chr_rom: raw[chr_rom_start..(chr_rom_start + chr_rom_size)].to_vec(),
             mapper: mapper,
-            screen_mirroring: screen_mirroring,
+            mirroring: mirroring,
         })
     }
 }

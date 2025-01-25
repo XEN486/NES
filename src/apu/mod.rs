@@ -16,7 +16,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 pub struct APU {
-    pub buffer: Arc<Mutex<Vec<i16>>>,
+    pub buffer: Arc<Mutex<Vec<f32>>>,
     frame_counter: FrameCounter,
     pulse_0: PulseChannel,
     pulse_1: PulseChannel,
@@ -151,7 +151,7 @@ impl APU {
         self.noise.update();
 
         if cycles % 40 == 0 {
-            let s: i16 = self.sample();
+            let s = self.sample();
             self.buffer.lock().expect("Failed to get buffer").push(s);
         }
     }
@@ -160,27 +160,27 @@ impl APU {
         self.buffer.lock().expect("Failed to get buffer").clear();
     }
 
-    fn sample(&mut self) -> i16 {
+    fn sample(&mut self) -> f32 {
         // sample each channel
         let p0 = self.pulse_0.sample() as f64;
         let p1 = self.pulse_1.sample() as f64;
         let t = self.triangle.sample() as f64;
         let n = self.noise.sample() as f64;
         let d = self.dmc.sample() as f64;
-
+    
         // combine
         let pulse_out = 95.88 / ((8218.0 / (p0 + p1)) + 100.0);
         let tnd_out = 159.79 / ((1.0 / (t / 8227.0 + n / 12241.0 + d / 22638.0)) + 100.0);
-
-        // scale to u16
-        let mut output = (pulse_out + tnd_out) * 65535.0;
-
+    
+        // combine pulse and tnd outputs
+        let mut output = pulse_out + tnd_out;
+    
         // apply filters
-        for i in 0..3 {
+        for i in 0..self.filters.len() {
             output = self.filters[i].tick(output);
         }
-
-        // cast to i16
-        output as i16
+    
+        // return the normalized output as f32
+        output as f32
     }
 }

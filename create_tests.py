@@ -1,8 +1,6 @@
 import csv
 
 failures = """
-    cpu_test::cpu_test::test_ror_6e
-    cpu_test::cpu_test::test_ror_7e
     cpu_test::cpu_test::test_slo_03
     cpu_test::cpu_test::test_slo_1b
     cpu_test::cpu_test::test_sre_53
@@ -12,7 +10,7 @@ instructions = {}
 with open('6502ops.csv', 'r') as file:
     reader = csv.reader(file)
     for row in reader:
-        if not row or f'    cpu_test::cpu_test::test_{row[1].lower()}_{row[0][2:]}' not in failures:
+        if not row:# or f'    cpu_test::cpu_test::test_{row[1].lower()}_{row[0][2:]}' not in failures:
             continue
         
         try:
@@ -314,7 +312,7 @@ mod cpu_test {
 
 """
 
-for i in range(0, 0xFF):
+for i in range(1, 0xFF):
     try:
         boilerplate += """
     #[test]{}

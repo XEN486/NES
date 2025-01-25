@@ -1,11 +1,15 @@
 pub struct Frame {
+    pub width: usize,
+    pub height: usize,
     pub data: Vec<u8>,
 }
 
 impl Frame {
-    pub fn new() -> Frame {
+    pub fn new(width: usize, height: usize) -> Frame {
         Frame {
-            data: vec![0; 256 * 240 * 3],
+            width,
+            height,
+            data: vec![0; width * height * 3],
         }
     }
 
@@ -50,7 +54,7 @@ impl Frame {
     }
 
     pub fn set_pixel(&mut self, x: usize, y: usize, rgb: (u8, u8, u8)) {
-        let index = y * 3 * 256 + x * 3;
+        let index = y * 3 * self.width + x * 3;
         if index + 2 < self.data.len() {
             self.data[index + 0] = rgb.0;
             self.data[index + 1] = rgb.1;

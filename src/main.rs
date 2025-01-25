@@ -13,6 +13,7 @@ mod cpu_test;
 use bus::Bus;
 use cartridge::Rom;
 use apu::APU;
+use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
 use ppu::PPU;
 use cpu::CPU;
 use render::frame::Frame;
@@ -43,24 +44,28 @@ fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
 }
 
 fn main() {
+    let width: u32 = 256;
+    let height: u32 = 240;
+    let scale: u32 = 4;
+
     // init sdl3
     let sdl_context = sdl3::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
     let window = video_subsystem
-        .window("XeNES", (256.0 * 4.0) as u32, (240.0 * 4.0) as u32)
+        .window("fNES", width * scale, height * scale)
         .position_centered()
         .build()
         .unwrap();
 
     let mut canvas = window.into_canvas();
     let mut event_pump = sdl_context.event_pump().unwrap();
-    canvas.set_scale(3.0, 3.0).unwrap();
+    canvas.set_scale(scale as f32, scale as f32).unwrap();
 
     let creator = canvas.texture_creator();
     let mut texture = unsafe {
         let t = creator
-            .create_texture_target(PixelFormat::from_ll(SDL_PIXELFORMAT_RGB24), 256, 240)
+            .create_texture_target(PixelFormat::from_ll(SDL_PIXELFORMAT_RGB24), width, height)
             .unwrap();
 
         SDL_SetTextureScaleMode(t.raw(), SDL_ScaleMode::NEAREST);
@@ -68,14 +73,13 @@ fn main() {
     };
 
     // load the game
-    let bytes = std::fs::read("smb.nes").expect("Failed to read ROM file");
-    let rom = Rom::new(&bytes).expect("Failed to initialize ROM");
+    let bytes = std::fs::read("mb.nes").expect("failed to read ROM file");
+    let rom = Rom::new(&bytes).expect("failed to initialize ROM");
 
-    let mut frame = Frame::new();
-
+    let mut frame = Frame::new(width as usize, height as usize);
     let bus = Bus::new(rom, move |ppu: &PPU, apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8, ram_corruption: &mut u8| {
         render::render(ppu, &mut frame);
-        texture.update(None, &frame.data, 256 * 3).unwrap();
+        texture.update(None, &frame.data, width as usize * 3).unwrap();
 
         canvas.copy(&texture, None, None).unwrap();
         canvas.present();
@@ -117,6 +121,42 @@ fn main() {
             }
         }
     });
+
+    let buffer = bus.get_apu_buffer();
+    let host = cpal::default_host();
+    let device = host.default_output_device().expect("no output device available");
+    let config = device.default_output_config().expect("failed to get default config");
+
+    assert_eq!(
+        config.sample_format(),
+        cpal::SampleFormat::F32,
+        "the audio device does not support f32 format"
+    );
+
+    let stream_config = config.into();
+
+    // Create the audio stream
+    let stream = device
+        .build_output_stream(
+            &stream_config,
+            move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
+                let mut buffer_lock = buffer.lock().expect("failed to lock buffer");
+
+                for frame in data.iter_mut() {
+                    // Fetch the next sample or play silence if the buffer is empty
+                    *frame = buffer_lock.pop().unwrap_or(0.0);
+                }
+            },
+            move |err| {
+                eprintln!("an error occurred on the audio stream: {}", err);
+            },
+            None
+        )
+        .expect("failed to build audio stream");
+
+    // Play the audio stream
+    //stream.play().expect("failed to play stream");
+
     let mut cpu = CPU::new(bus);
     cpu.reset();
     //cpu.pc = 0xC000;

@@ -290,8 +290,26 @@ impl<'a> CPU<'a> {
     }
 
     fn isc(&mut self, mode: &AddressingMode) -> bool {
-        self.inc(mode);
-        self.sbc(mode);
+        let addr = self.get_operand_address(mode);
+        let mut value = self.mem_read(addr);
+
+        // INC
+        value = value.wrapping_add(1);
+        self.mem_write(addr, value);
+
+        // SBC
+        let carry = if self.status & StatusFlags::Carry.bits() != 0 { 0 } else { 1 };
+        
+        let result = (self.registers.a as u16).wrapping_sub(value as u16).wrapping_sub(carry as u16);
+        self.set_flag_else_clear(StatusFlags::Carry, result < 0x100);
+        
+        let result_u8 = result as u8;
+        self.set_flag_else_clear(StatusFlags::Overflow, ((self.registers.a ^ result_u8) & (self.registers.a ^ value) & 0x80) != 0);
+        
+        self.registers.a = result_u8;
+        self.set_flag_else_clear(StatusFlags::Zero, self.registers.a == 0);
+        self.set_flag_else_clear(StatusFlags::Negative, (self.registers.a & 0x80) != 0);
+    
         false
     }
 
@@ -550,16 +568,32 @@ impl<'a> CPU<'a> {
     }
 
     fn slo(&mut self, mode: &AddressingMode) -> bool {
-        self.asl(&mode);
-        self.ora(&mode);
+        let addr = self.get_operand_address(mode);
+        let mut value = self.mem_read(addr);
         
+        self.set_flag_else_clear(StatusFlags::Carry, (value & 0x80) != 0);
+        value <<= 1;
+        self.registers.a |= value;
+
+        self.set_flag_else_clear(StatusFlags::Zero, self.registers.a == 0);
+        self.set_flag_else_clear(StatusFlags::Negative, (self.registers.a & 0x80) != 0);
+        self.mem_write(addr, value);
+    
         false
     }
 
     fn sre(&mut self, mode: &AddressingMode) -> bool {
-        self.lsr(mode);
-        self.eor(mode);
-
+        let addr = self.get_operand_address(mode);
+        let mut value = self.mem_read(addr);
+    
+        self.set_flag_else_clear(StatusFlags::Carry, (value & 0x01) != 0);
+        value >>= 1;
+        self.registers.a ^= value;
+    
+        self.set_flag_else_clear(StatusFlags::Zero, self.registers.a == 0);
+        self.set_flag_else_clear(StatusFlags::Negative, (self.registers.a & 0x80) != 0);
+        self.mem_write(addr, value);
+    
         false
     }
 

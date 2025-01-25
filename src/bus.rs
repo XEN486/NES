@@ -27,6 +27,7 @@ pub trait Mem {
 pub struct Bus<'call> {
     cpu_vram: [u8; 2048],
     prg_rom: Vec<u8>,
+    mapper: u8,
     ppu: PPU,
     apu: APU,
     joypad1: Joypad,
@@ -39,12 +40,13 @@ pub struct Bus<'call> {
 
 impl<'a> Bus<'a> {
     pub fn new<'call, F>(rom: Rom, gameloop: F) -> Bus<'call> where F: FnMut(&PPU, &mut APU, &mut Joypad, &mut u8, &mut u8) + 'call {
-        let ppu = PPU::new(rom.chr_rom, rom.screen_mirroring);
+        let ppu = PPU::new(rom.chr_rom, rom.mirroring);
         let apu = APU::new(rom.prg_rom.clone());
 
         Bus {
             cpu_vram: [0; 2048],
             prg_rom: rom.prg_rom.clone(),
+            mapper: rom.mapper,
             ppu: ppu,
             apu: apu,
             joypad1: Joypad::new(),
@@ -56,16 +58,39 @@ impl<'a> Bus<'a> {
         }
     }
 
-    pub fn get_apu_buffer(&self) -> Arc<Mutex<Vec<i16>>> {
+    pub fn get_apu_buffer(&self) -> Arc<Mutex<Vec<f32>>> {
         self.apu.buffer.clone()
     }
 
     fn read_prg_rom(&self, mut addr: u16) -> u8 {
-        addr -= 0x8000; // PRG rom starts from 0x8000 in ROM
-        if self.prg_rom.len() == 0x4000 && addr >= 0x4000 {
-            addr %= 0x4000; // 0x4000 in size
+        let prg_rom_len = self.prg_rom.len() as u16;
+        addr -= 0x8000;
+    
+        if prg_rom_len <= 0x4000 {
+            if addr >= 0x4000 {
+                addr %= 0x4000;
+            }
+        } else {
+            match self.mapper {
+                0..=3 => {
+                    if addr >= 0x4000 {
+                        addr %= prg_rom_len;
+                    }
+                }
+                4..=7 => {
+                    if addr >= 0x4000 {
+                        addr %= 0x8000;
+                    }
+                }
+                _ => {
+                    println!("[BUS] unsupported mapper");
+                    if addr >= prg_rom_len {
+                        addr %= prg_rom_len;
+                    }
+                }
+            }
         }
-
+    
         self.prg_rom[addr as usize]
     }
 
@@ -161,13 +186,13 @@ impl Mem for Bus<'_> {
             0x2006 => self.ppu.write_to_ppu_address(corrupted),
             0x2007 => self.ppu.write_to_data(corrupted),
 
-            0x4000 ..= 0x4003 => self.apu.write_to_pulse_0(addr, data),
-            0x4004 ..= 0x4007 => self.apu.write_to_pulse_1(addr, data),
-            0x4008 ..= 0x400B => self.apu.write_to_triangle(addr, data),
-            0x400C ..= 0x400F => self.apu.write_to_noise(addr, data),
+            0x4000 ..= 0x4003 => self.apu.write_to_pulse_0(addr, corrupted),
+            0x4004 ..= 0x4007 => self.apu.write_to_pulse_1(addr, corrupted),
+            0x4008 ..= 0x400B => self.apu.write_to_triangle(addr, corrupted),
+            0x400C ..= 0x400F => self.apu.write_to_noise(addr, corrupted),
             0x4010 ..= 0x4013 => self.apu.write_to_dmc(addr, data),
-            0x4015 => self.apu.set_status(data),
-            0x4017 => self.apu.set_frame_counter(data, self.cycles),
+            0x4015 => self.apu.set_status(corrupted),
+            0x4017 => self.apu.set_frame_counter(corrupted, self.cycles),
 
             0x4016 => self.joypad1.write(data),
 
