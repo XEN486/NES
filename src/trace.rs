@@ -4560,7 +4560,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x02 => { // NOP IMP
+            0x02 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4572,7 +4572,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4586,7 +4586,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x12 => { // NOP IMP
+            0x12 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4598,7 +4598,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4612,7 +4612,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x22 => { // NOP IMP
+            0x22 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4624,7 +4624,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4638,7 +4638,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x32 => { // NOP IMP
+            0x32 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4650,7 +4650,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4664,7 +4664,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x42 => { // NOP IMP
+            0x42 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4676,7 +4676,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4690,7 +4690,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x52 => { // NOP IMP
+            0x52 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4702,7 +4702,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4716,7 +4716,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x62 => { // NOP IMP
+            0x62 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4728,7 +4728,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4742,7 +4742,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x72 => { // NOP IMP
+            0x72 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4754,7 +4754,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4768,7 +4768,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x92 => { // NOP IMP
+            0x92 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4780,7 +4780,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4794,7 +4794,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xb2 => { // NOP IMP
+            0xb2 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4806,7 +4806,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4820,7 +4820,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xd2 => { // NOP IMP
+            0xd2 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4832,7 +4832,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
@@ -4846,7 +4846,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xf2 => { // NOP IMP
+            0xf2 => { // HLT IMP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4858,7 +4858,7 @@ impl<'a> CPU<'a> {
                 let _stored_value: u8 = self.mem_read(mem_addr);
                 let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
                 
-                let instruction: String = format!("NOP {}", "");
+                let instruction: String = format!("HLT {}", "");
                 
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 

@@ -210,7 +210,7 @@ impl<'a> CPU<'a> {
     }
 
     fn interrupt(&mut self, interrupt: Interrupt) {
-        self.stack_push_u16(self.pc);
+        self.stack_push_u16(self.pc + 2);
         let mut flag = self.status.clone();
 
         if interrupt.flag_mask & 0b0001_0000 != 0 {

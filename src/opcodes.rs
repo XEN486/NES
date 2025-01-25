@@ -257,6 +257,10 @@ impl<'a> CPU<'a> {
         false
     }
 
+    fn hlt(&mut self, _mode: &AddressingMode) -> bool {
+        panic!("[CPU] Halten sie!");
+    }
+
     fn inc(&mut self, mode: &AddressingMode) -> bool {
         let addr: u16 = self.get_operand_address(mode);
         let value: u8 = self.mem_read(addr);
@@ -450,7 +454,7 @@ impl<'a> CPU<'a> {
         let old_b0 = self.registers.a & 0b0000_0001;
 
         self.registers.a >>= 1;
-        if self.status & StatusFlags::Carry.bits() == 1 {
+        if self.status & StatusFlags::Carry.bits() != 0 {
             self.registers.a |= 0b1000_0000;
         } else {
             self.registers.a &= 0b0111_1111;
@@ -466,18 +470,17 @@ impl<'a> CPU<'a> {
     fn ror(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
         let mut value = self.mem_read(addr);
-        let old_b0 = value & 0b0000_0001;
 
+        let old_b0 = value & 0b0000_0001;
         value >>= 1;
-        if self.status & StatusFlags::Carry.bits() == 1 {
+
+        if self.status & StatusFlags::Carry.bits() != 0 {
             value |= 0b1000_0000;
         } else {
             value &= 0b0111_1111;
         }
 
-        self.mem_write(addr, value);
         self.set_flag_else_clear(StatusFlags::Carry, old_b0 != 0);
-        self.set_flag_else_clear(StatusFlags::Zero, value == 0);
         self.set_flag_else_clear(StatusFlags::Negative, (value & 0x80) != 0);
 
         false

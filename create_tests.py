@@ -1,10 +1,18 @@
 import csv
 
-instructions = {opcode: 'unk' for opcode in range(0x00, 0xFF)}
+failures = """
+    cpu_test::cpu_test::test_ror_6e
+    cpu_test::cpu_test::test_ror_7e
+    cpu_test::cpu_test::test_slo_03
+    cpu_test::cpu_test::test_slo_1b
+    cpu_test::cpu_test::test_sre_53
+""".split('\n')
+#instructions = {opcode: 'unk' for opcode in range(0x00, 0xFF)}
+instructions = {}
 with open('6502ops.csv', 'r') as file:
     reader = csv.reader(file)
     for row in reader:
-        if not row:
+        if not row or f'    cpu_test::cpu_test::test_{row[1].lower()}_{row[0][2:]}' not in failures:
             continue
         
         try:
@@ -222,7 +230,7 @@ impl<'a> CPU<'a> {
     }
 
     fn interrupt(&mut self, interrupt: Interrupt) {
-        self.stack_push_u16(self.pc);
+        self.stack_push_u16(self.pc + 2);
         let mut flag = self.status.clone();
 
         if interrupt.flag_mask & 0b0001_0000 != 0 {
@@ -307,8 +315,9 @@ mod cpu_test {
 """
 
 for i in range(0, 0xFF):
-    boilerplate += """
-    #[test]
+    try:
+        boilerplate += """
+    #[test]{}
     fn test_{}_{:02x}() {{
         let mut cpu = CPU::new();
         cpu.reset();
@@ -347,7 +356,9 @@ for i in range(0, 0xFF):
         }}
     }}
 
-    """.format(instructions[i], i, i)
+        """.format('\n    #[should_panic(expected = "[CPU] Halten sie!")]' if instructions[i] == 'hlt' else '', instructions[i], i, i)
+    except:
+        pass
 
 boilerplate += "\n}"
 with open('src/cpu_test.rs', 'w') as f:

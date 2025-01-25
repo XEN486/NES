@@ -6,6 +6,8 @@ mod render;
 mod interrupt;
 mod joypad;
 mod apu;
+
+#[rustfmt::skip]
 mod cpu_test;
 
 use bus::Bus;
@@ -17,13 +19,13 @@ use render::frame::Frame;
 use joypad::JoypadButton;
 use joypad::Joypad;
 
-use rodio::Source;
 use sdl3::event::Event;
 use sdl3::keyboard::Keycode;
 use sdl3::pixels::PixelFormat;
 use sdl3::sys::pixels::SDL_PIXELFORMAT_RGB24;
 use sdl3::sys::render::SDL_SetTextureScaleMode;
 use sdl3::sys::surface::SDL_ScaleMode;
+
 use std::time::{Duration, Instant};
 
 fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
@@ -115,7 +117,6 @@ fn main() {
             }
         }
     });
-
     let mut cpu = CPU::new(bus);
     cpu.reset();
     //cpu.pc = 0xC000;

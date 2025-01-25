@@ -201,18 +201,18 @@ opcode,mnemonic,addressing mode,bytes,cycles,page cross
 0xda,NOP,IMP,1,2,no
 0xfa,NOP,IMP,1,2,no
 
-0x02,NOP,IMP,1,2,no
-0x12,NOP,IMP,1,2,no
-0x22,NOP,IMP,1,2,no
-0x32,NOP,IMP,1,2,no
-0x42,NOP,IMP,1,2,no
-0x52,NOP,IMP,1,2,no
-0x62,NOP,IMP,1,2,no
-0x72,NOP,IMP,1,2,no
-0x92,NOP,IMP,1,2,no
-0xb2,NOP,IMP,1,2,no
-0xd2,NOP,IMP,1,2,no
-0xf2,NOP,IMP,1,2,no
+0x02,HLT,IMP,1,2,no
+0x12,HLT,IMP,1,2,no
+0x22,HLT,IMP,1,2,no
+0x32,HLT,IMP,1,2,no
+0x42,HLT,IMP,1,2,no
+0x52,HLT,IMP,1,2,no
+0x62,HLT,IMP,1,2,no
+0x72,HLT,IMP,1,2,no
+0x92,HLT,IMP,1,2,no
+0xb2,HLT,IMP,1,2,no
+0xd2,HLT,IMP,1,2,no
+0xf2,HLT,IMP,1,2,no
 
 0x80,SKB,IMM,2,2,no
 0x82,SKB,IMM,2,2,no

@@ -1053,74 +1053,74 @@ impl<'a> CPU<'a> {
                 result
             }
 
-            0x02 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x02 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0x12 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x12 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0x22 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x22 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0x32 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x32 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0x42 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x42 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0x52 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x52 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0x62 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x62 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0x72 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x72 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0x92 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0x92 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0xb2 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0xb2 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0xd2 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0xd2 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
 
-            0xf2 => { // NOP IMP
-                let result: bool = self.nop(&AddressingMode::Implied);
+            0xf2 => { // HLT IMP
+                let result: bool = self.hlt(&AddressingMode::Implied);
                 self.pc = self.pc.wrapping_add(0);
                 result
             }
