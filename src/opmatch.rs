@@ -783,13 +783,13 @@ impl<'a> CPU<'a> {
                 result
             }
 
-            0x7e => { // ROR ABS
+            0x6e => { // ROR ABS
                 let result: bool = self.ror(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_add(2);
                 result
             }
 
-            0x6e => { // ROR ABSX
+            0x7e => { // ROR ABSX
                 let result: bool = self.ror(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_add(2);
                 result

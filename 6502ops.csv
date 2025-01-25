@@ -150,8 +150,8 @@ opcode,mnemonic,addressing mode,bytes,cycles,page cross
 0x6a,ROR,ACC,1,2,no
 0x66,ROR,ZP,2,5,no
 0x76,ROR,ZPX,2,6,no
-0x7e,ROR,ABS,3,6,no
-0x6e,ROR,ABSX,3,7,no
+0x6e,ROR,ABS,3,6,no
+0x7e,ROR,ABSX,3,7,no
 
 0xe9,SBC,IMM,2,2,no
 0xe5,SBC,ZP,2,3,no

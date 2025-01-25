@@ -3390,7 +3390,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x7e => { // ROR ABS
+            0x6e => { // ROR ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -3416,7 +3416,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x6e => { // ROR ABSX
+            0x7e => { // ROR ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));

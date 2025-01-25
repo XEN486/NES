@@ -133,8 +133,8 @@ impl<'a> CPU<'a> {
             0x6a => 2, // ROR ACC
             0x66 => 5, // ROR ZP
             0x76 => 6, // ROR ZPX
-            0x7e => 6, // ROR ABS
-            0x6e => 7, // ROR ABSX
+            0x6e => 6, // ROR ABS
+            0x7e => 7, // ROR ABSX
             0xe9 => 2, // SBC IMM
             0xe5 => 3, // SBC ZP
             0xf5 => 4, // SBC ZPX
