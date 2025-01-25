@@ -1,104 +1,17 @@
-s = """
-    cpu_test::cpu_test::test_11
-    cpu_test::cpu_test::test_12
-    cpu_test::cpu_test::test_19
-    cpu_test::cpu_test::test_1b
-    cpu_test::cpu_test::test_1c
-    cpu_test::cpu_test::test_1d
-    cpu_test::cpu_test::test_22
-    cpu_test::cpu_test::test_23
-    cpu_test::cpu_test::test_27
-    cpu_test::cpu_test::test_2f
-    cpu_test::cpu_test::test_31
-    cpu_test::cpu_test::test_32
-    cpu_test::cpu_test::test_33
-    cpu_test::cpu_test::test_37
-    cpu_test::cpu_test::test_39
-    cpu_test::cpu_test::test_3b
-    cpu_test::cpu_test::test_3c
-    cpu_test::cpu_test::test_3d
-    cpu_test::cpu_test::test_3f
-    cpu_test::cpu_test::test_42
-    cpu_test::cpu_test::test_46
-    cpu_test::cpu_test::test_4b
-    cpu_test::cpu_test::test_4e
-    cpu_test::cpu_test::test_51
-    cpu_test::cpu_test::test_52
-    cpu_test::cpu_test::test_53
-    cpu_test::cpu_test::test_56
-    cpu_test::cpu_test::test_59
-    cpu_test::cpu_test::test_5c
-    cpu_test::cpu_test::test_5d
-    cpu_test::cpu_test::test_5e
-    cpu_test::cpu_test::test_62
-    cpu_test::cpu_test::test_63
-    cpu_test::cpu_test::test_66
-    cpu_test::cpu_test::test_67
-    cpu_test::cpu_test::test_68
-    cpu_test::cpu_test::test_6b
-    cpu_test::cpu_test::test_6e
-    cpu_test::cpu_test::test_6f
-    cpu_test::cpu_test::test_71
-    cpu_test::cpu_test::test_72
-    cpu_test::cpu_test::test_73
-    cpu_test::cpu_test::test_76
-    cpu_test::cpu_test::test_77
-    cpu_test::cpu_test::test_79
-    cpu_test::cpu_test::test_7b
-    cpu_test::cpu_test::test_7c
-    cpu_test::cpu_test::test_7d
-    cpu_test::cpu_test::test_7e
-    cpu_test::cpu_test::test_7f
-    cpu_test::cpu_test::test_83
-    cpu_test::cpu_test::test_87
-    cpu_test::cpu_test::test_8b
-    cpu_test::cpu_test::test_8f
-    cpu_test::cpu_test::test_92
-    cpu_test::cpu_test::test_93
-    cpu_test::cpu_test::test_97
-    cpu_test::cpu_test::test_9b
-    cpu_test::cpu_test::test_9c
-    cpu_test::cpu_test::test_9e
-    cpu_test::cpu_test::test_9f
-    cpu_test::cpu_test::test_a3
-    cpu_test::cpu_test::test_a7
-    cpu_test::cpu_test::test_ab
-    cpu_test::cpu_test::test_af
-    cpu_test::cpu_test::test_b1
-    cpu_test::cpu_test::test_b2
-    cpu_test::cpu_test::test_b3
-    cpu_test::cpu_test::test_b7
-    cpu_test::cpu_test::test_b9
-    cpu_test::cpu_test::test_bb
-    cpu_test::cpu_test::test_bc
-    cpu_test::cpu_test::test_bd
-    cpu_test::cpu_test::test_be
-    cpu_test::cpu_test::test_bf
-    cpu_test::cpu_test::test_c3
-    cpu_test::cpu_test::test_c7
-    cpu_test::cpu_test::test_cb
-    cpu_test::cpu_test::test_cf
-    cpu_test::cpu_test::test_d1
-    cpu_test::cpu_test::test_d2
-    cpu_test::cpu_test::test_d3
-    cpu_test::cpu_test::test_d7
-    cpu_test::cpu_test::test_d9
-    cpu_test::cpu_test::test_db
-    cpu_test::cpu_test::test_dc
-    cpu_test::cpu_test::test_dd
-    cpu_test::cpu_test::test_df
-    cpu_test::cpu_test::test_e3
-    cpu_test::cpu_test::test_eb
-    cpu_test::cpu_test::test_f1
-    cpu_test::cpu_test::test_f2
-    cpu_test::cpu_test::test_f3
-    cpu_test::cpu_test::test_f9
-    cpu_test::cpu_test::test_fc
-    cpu_test::cpu_test::test_fd
-"""
-a = []
-for i in s.split('\n'):
-    a.append(i[-2:])
+import csv
+
+instructions = {opcode: 'unk' for opcode in range(0x00, 0xFF)}
+with open('6502ops.csv', 'r') as file:
+    reader = csv.reader(file)
+    for row in reader:
+        if not row:
+            continue
+        
+        try:
+            instructions[int(row[0], 16)] = row[1].lower()
+        except:
+            pass
+
 
 boilerplate = """
 use std::marker::PhantomData;
@@ -214,7 +127,6 @@ impl<'a> CPU<'a> {
 
     pub fn get_operand_address(&mut self, mode: &AddressingMode) -> u16 {
         match mode {
-            AddressingMode::Immediate => self.pc,
             AddressingMode::ZeroPage => self.mem_read(self.pc) as u16,
 
             AddressingMode::Absolute => self.mem_read_u16(self.pc),
@@ -235,6 +147,7 @@ impl<'a> CPU<'a> {
                 let addr = base.wrapping_add(self.registers.x as u16);
                 addr
             }
+
             AddressingMode::AbsoluteY => {
                 let base = self.mem_read_u16(self.pc);
                 let addr = base.wrapping_add(self.registers.y as u16);
@@ -249,6 +162,7 @@ impl<'a> CPU<'a> {
                 let hi = self.mem_read(ptr.wrapping_add(1) as u16);
                 (hi as u16) << 8 | (lo as u16)
             }
+
             AddressingMode::IndirectY => {
                 let base = self.mem_read(self.pc);
 
@@ -259,24 +173,35 @@ impl<'a> CPU<'a> {
                 deref
             }
 
+            AddressingMode::Indirect => {
+                let mem_address = self.mem_read_u16(self.pc);
+
+                if mem_address & 0x00FF == 0x00FF {
+                    let lo = self.mem_read(mem_address);
+                    let hi = self.mem_read(mem_address & 0xFF00);
+                    return (hi as u16) << 8 | (lo as u16)
+                }
+                self.mem_read_u16(mem_address)
+            }
+
+            AddressingMode::Immediate => self.pc,
             AddressingMode::Relative => (self.pc as i32 + self.mem_read(self.pc) as i8 as i32) as u16,
             AddressingMode::Implied => self.pc,
             AddressingMode::Accumulator => self.pc,
-            AddressingMode::Indirect => self.mem_read_u16(self.pc),
         }
     }
 
     fn pagecross_penalty(&mut self, mode: &AddressingMode) -> u8 {
         match mode {
             AddressingMode::AbsoluteX => {
-                let base = self.get_operand_address(mode);
-                let effective = base.wrapping_add(self.registers.x as u16);
-                (base & 0xFF00 != effective & 0xFF00) as u8
+                let base = self.mem_read_u16(self.pc);
+                let addr = base.wrapping_add(self.registers.x as u16);
+                (base & 0xFF00 != addr & 0xFF00) as u8
             }
             AddressingMode::AbsoluteY => {
-                let base = self.get_operand_address(mode);
-                let effective = base.wrapping_add(self.registers.y as u16);
-                (base & 0xFF00 != effective & 0xFF00) as u8
+                let base = self.mem_read_u16(self.pc);
+                let addr = base.wrapping_add(self.registers.y as u16);
+                (base & 0xFF00 != addr & 0xFF00) as u8
             }
             AddressingMode::Relative => {
                 let offset = self.mem_read(self.pc) as i8 as i16; // Signed offset
@@ -284,13 +209,13 @@ impl<'a> CPU<'a> {
                 (self.pc.wrapping_add(1) & 0xFF00 != new_pc & 0xFF00) as u8
             }
             AddressingMode::IndirectY => {
-                let addr = self.get_operand_address(mode);
-                let base = self.mem_read(addr);
-                let lo = self.mem_read(base as u16) as u16;
-                let hi = self.mem_read(base.wrapping_add(1) as u16) as u16;
-                let deref_base = (hi << 8) | lo;
-                let effective = deref_base.wrapping_add(self.registers.y as u16);
-                (deref_base & 0xFF00 != effective & 0xFF00) as u8
+                let base = self.mem_read(self.pc);
+
+                let lo = self.mem_read(base as u16);
+                let hi = self.mem_read((base as u8).wrapping_add(1) as u16);
+                let deref_base = (hi as u16) << 8 | (lo as u16);
+                let deref = deref_base.wrapping_add(self.registers.y as u16);
+                (deref & 0xFF00 != deref_base & 0xFF00) as u8
             }
             _ => 0,
         }
@@ -382,21 +307,16 @@ mod cpu_test {
 """
 
 for i in range(0, 0xFF):
-    if hex(i)[2:] not in a:
-        continue
-
     boilerplate += """
     #[test]
-    fn test_{:02x}() {{
+    fn test_{}_{:02x}() {{
         let mut cpu = CPU::new();
         cpu.reset();
 
-        println!("parsing file");
         let file = File::open("v1/{:02x}.json").expect("failed to open file");
         let data: Vec<Data> = serde_json::from_reader(file).expect("failed parsing json");
 
         for entry in data {{
-            //println!("test: {{}}", entry.name);
             for r in entry.initial.ram.iter() {{
                 cpu.memory[r.0 as usize] = r.1;
             }}
@@ -414,7 +334,7 @@ for i in range(0, 0xFF):
                 cycles_executed += cycles as usize;
             }}
 
-            //assert_eq!(cpu.pc, entry.r#final.pc);
+            assert_eq!(cpu.pc, entry.r#final.pc);
             assert_eq!(cpu.registers.s, entry.r#final.s);
             assert_eq!(cpu.registers.a, entry.r#final.a);
             assert_eq!(cpu.registers.x, entry.r#final.x);
@@ -427,7 +347,7 @@ for i in range(0, 0xFF):
         }}
     }}
 
-    """.format(i, i)
+    """.format(instructions[i], i, i)
 
 boilerplate += "\n}"
 with open('src/cpu_test.rs', 'w') as f:

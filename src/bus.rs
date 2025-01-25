@@ -2,7 +2,8 @@ use crate::apu::APU;
 use crate::{cartridge::Rom, ppu::PPU};
 use crate::joypad::Joypad;
 use rand::Rng;
-
+use std::sync::Arc;
+use std::sync::Mutex;
 
 pub trait Mem {
     fn mem_read(&mut self, addr: u16) -> u8;
@@ -27,7 +28,7 @@ pub struct Bus<'call> {
     cpu_vram: [u8; 2048],
     prg_rom: Vec<u8>,
     ppu: PPU,
-    pub apu: APU,
+    apu: APU,
     joypad1: Joypad,
 
     cycles: usize,
@@ -55,6 +56,10 @@ impl<'a> Bus<'a> {
         }
     }
 
+    pub fn get_apu_buffer(&self) -> Arc<Mutex<Vec<i16>>> {
+        self.apu.buffer.clone()
+    }
+
     fn read_prg_rom(&self, mut addr: u16) -> u8 {
         addr -= 0x8000; // PRG rom starts from 0x8000 in ROM
         if self.prg_rom.len() == 0x4000 && addr >= 0x4000 {
@@ -65,10 +70,11 @@ impl<'a> Bus<'a> {
     }
 
     pub fn tick(&mut self, cycles: u8) {
-        self.cycles += cycles as usize;
-
         self.apu.dmc.reset_stall_cycles(); // reset stall cycles on the DMC
-        self.apu.tick(self.cycles); // 1 APU cycle = 1 CPU cycle
+        for _ in 0..cycles {
+            self.cycles += 1;
+            self.apu.tick(self.cycles);
+        }
 
         let new_frame: bool = self.ppu.tick(cycles * 3); // 1 PPU cycle = 3 CPU cycles
 
@@ -76,10 +82,6 @@ impl<'a> Bus<'a> {
         if new_frame {
             (self.gameloop)(&self.ppu, &mut self.apu, &mut self.joypad1, &mut self.corruption, &mut self.ram_corruption);
         }
-    }
-
-    pub fn get_apu_samples(&self) -> &Vec<i16> {
-        &self.apu.buffer
     }
 
     pub fn poll_nmi_status(&mut self) -> Option<u8> {

@@ -432,7 +432,7 @@ dependencies = [
  "bitflags 2.8.0",
  "rand",
  "rodio",
- "sdl2",
+ "sdl3",
  "serde",
  "serde_json",
 ]
@@ -668,27 +668,22 @@ dependencies = [
 ]
 
 [[package]]
-name = "sdl2"
-version = "0.37.0"
+name = "sdl3"
+version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b498da7d14d1ad6c839729bd4ad6fc11d90a57583605f3b4df2cd709a9cd380"
+checksum = "8f3df35a699857319f1c3a3bd778f528345f14f7861bc71041c0ae0958d9a2e3"
 dependencies = [
- "bitflags 1.3.2",
+ "bitflags 2.8.0",
  "lazy_static",
  "libc",
- "sdl2-sys",
+ "sdl3-sys",
 ]
 
 [[package]]
-name = "sdl2-sys"
-version = "0.37.0"
+name = "sdl3-sys"
+version = "0.4.1+SDL3-3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "951deab27af08ed9c6068b7b0d05a93c91f0a8eb16b6b816a5e73452a43521d3"
-dependencies = [
- "cfg-if",
- "libc",
- "version-compare",
-]
+checksum = "dbb92e547216ba46fd828a232ddb9687e9195358d9a9f184b819648ce612795c"
 
 [[package]]
 name = "serde"
@@ -845,12 +840,6 @@ name = "unicode-ident"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "11cd88e12b17c6494200a9c1b683a04fcac9573ed74cd1b62aeb2727c5592243"
-
-[[package]]
-name = "version-compare"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "579a42fc0b8e0c63b76519a339be31bed574929511fa53c1a3acae26eb258f29"
 
 [[package]]
 name = "walkdir"

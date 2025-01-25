@@ -115,11 +115,10 @@ impl<'a> CPU<'a> {
 
     pub fn get_operand_address(&mut self, mode: &AddressingMode) -> u16 {
         match mode {
-            AddressingMode::Immediate => self.pc,
             AddressingMode::ZeroPage => self.mem_read(self.pc) as u16,
-    
+
             AddressingMode::Absolute => self.mem_read_u16(self.pc),
-    
+
             AddressingMode::ZeroPageX => {
                 let pos = self.mem_read(self.pc);
                 let addr = pos.wrapping_add(self.registers.x) as u16;
@@ -130,55 +129,67 @@ impl<'a> CPU<'a> {
                 let addr = pos.wrapping_add(self.registers.y) as u16;
                 addr
             }
-    
+
             AddressingMode::AbsoluteX => {
                 let base = self.mem_read_u16(self.pc);
                 let addr = base.wrapping_add(self.registers.x as u16);
                 addr
             }
+
             AddressingMode::AbsoluteY => {
                 let base = self.mem_read_u16(self.pc);
                 let addr = base.wrapping_add(self.registers.y as u16);
                 addr
             }
-    
+
             AddressingMode::IndirectX => {
                 let base = self.mem_read(self.pc);
-                let ptr = base.wrapping_add(self.registers.x) as u16;
-                let lo = self.mem_read(ptr);
-                let hi = self.mem_read(ptr.wrapping_add(1));
+
+                let ptr: u8 = (base as u8).wrapping_add(self.registers.x);
+                let lo = self.mem_read(ptr as u16);
+                let hi = self.mem_read(ptr.wrapping_add(1) as u16);
                 (hi as u16) << 8 | (lo as u16)
             }
+
             AddressingMode::IndirectY => {
                 let base = self.mem_read(self.pc);
+
                 let lo = self.mem_read(base as u16);
-                let hi = self.mem_read((base as u16).wrapping_add(1));
+                let hi = self.mem_read((base as u8).wrapping_add(1) as u16);
                 let deref_base = (hi as u16) << 8 | (lo as u16);
                 let deref = deref_base.wrapping_add(self.registers.y as u16);
                 deref
             }
-    
-            AddressingMode::Relative => {
-                let offset = self.mem_read(self.pc) as i8;
-                (self.pc as i32 + offset as i32) as u16
+
+            AddressingMode::Indirect => {
+                let mem_address = self.mem_read_u16(self.pc);
+
+                if mem_address & 0x00FF == 0x00FF {
+                    let lo = self.mem_read(mem_address);
+                    let hi = self.mem_read(mem_address & 0xFF00);
+                    return (hi as u16) << 8 | (lo as u16)
+                }
+                self.mem_read_u16(mem_address)
             }
-    
+
+            AddressingMode::Immediate => self.pc,
+            AddressingMode::Relative => (self.pc as i32 + self.mem_read(self.pc) as i8 as i32) as u16,
             AddressingMode::Implied => self.pc,
             AddressingMode::Accumulator => self.pc,
-            AddressingMode::Indirect => self.mem_read_u16(self.pc),
         }
     }
+
     fn pagecross_penalty(&mut self, mode: &AddressingMode) -> u8 {
         match mode {
             AddressingMode::AbsoluteX => {
-                let base = self.get_operand_address(mode);
-                let effective = base.wrapping_add(self.registers.x as u16);
-                (base & 0xFF00 != effective & 0xFF00) as u8
+                let base = self.mem_read_u16(self.pc);
+                let addr = base.wrapping_add(self.registers.x as u16);
+                (base & 0xFF00 != addr & 0xFF00) as u8
             }
             AddressingMode::AbsoluteY => {
-                let base = self.get_operand_address(mode);
-                let effective = base.wrapping_add(self.registers.y as u16);
-                (base & 0xFF00 != effective & 0xFF00) as u8
+                let base = self.mem_read_u16(self.pc);
+                let addr = base.wrapping_add(self.registers.y as u16);
+                (base & 0xFF00 != addr & 0xFF00) as u8
             }
             AddressingMode::Relative => {
                 let offset = self.mem_read(self.pc) as i8 as i16; // Signed offset
@@ -186,13 +197,13 @@ impl<'a> CPU<'a> {
                 (self.pc.wrapping_add(1) & 0xFF00 != new_pc & 0xFF00) as u8
             }
             AddressingMode::IndirectY => {
-                let addr = self.get_operand_address(mode);
-                let base = self.mem_read(addr);
-                let lo = self.mem_read(base as u16) as u16;
-                let hi = self.mem_read(base.wrapping_add(1) as u16) as u16;
-                let deref_base = (hi << 8) | lo;
-                let effective = deref_base.wrapping_add(self.registers.y as u16);
-                (deref_base & 0xFF00 != effective & 0xFF00) as u8
+                let base = self.mem_read(self.pc);
+
+                let lo = self.mem_read(base as u16);
+                let hi = self.mem_read((base as u8).wrapping_add(1) as u16);
+                let deref_base = (hi as u16) << 8 | (lo as u16);
+                let deref = deref_base.wrapping_add(self.registers.y as u16);
+                (deref & 0xFF00 != deref_base & 0xFF00) as u8
             }
             _ => 0,
         }

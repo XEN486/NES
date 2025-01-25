@@ -12,8 +12,11 @@ use channels::{pulse::PulseChannel, triangle::TriangleChannel, noise::NoiseChann
 use filter::FirstOrderFilter;
 use sweep::SweepNegationMode;
 
+use std::sync::Arc;
+use std::sync::Mutex;
+
 pub struct APU {
-    pub buffer: Vec<i16>,
+    pub buffer: Arc<Mutex<Vec<i16>>>,
     frame_counter: FrameCounter,
     pulse_0: PulseChannel,
     pulse_1: PulseChannel,
@@ -26,7 +29,7 @@ pub struct APU {
 impl APU {
     pub fn new(prg_rom: Vec<u8>) -> APU {
         APU {
-            buffer: Vec::new(),
+            buffer: Arc::new(Mutex::new(Vec::new())),
             frame_counter: FrameCounter::new(),
 
             pulse_0: PulseChannel::new(SweepNegationMode::OnesCompliment),
@@ -149,12 +152,12 @@ impl APU {
 
         if cycles % 40 == 0 {
             let s: i16 = self.sample();
-            self.buffer.push(s);
+            self.buffer.lock().expect("Failed to get buffer").push(s);
         }
     }
 
     pub fn clear_buffer(&mut self) {
-        self.buffer.clear();
+        self.buffer.lock().expect("Failed to get buffer").clear();
     }
 
     fn sample(&mut self) -> i16 {

@@ -127,7 +127,7 @@ impl DMCChannel {
             return;
         }
 
-        self.counter = self.period - 1;
+        self.counter = self.period.wrapping_sub(1); // maybe
         if self.bit_count == 0 {
             return;
         }

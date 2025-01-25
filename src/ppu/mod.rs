@@ -174,8 +174,7 @@ impl PPU {
     pub fn tick(&mut self, cycles: u8) -> bool {
         self.cycles += cycles as usize;
         if self.cycles >= 341 {
-            let is_hit = self.is_sprite_0_hit(self.cycles);
-            if is_hit {
+            if self.is_sprite_0_hit(self.cycles) {
                 self.status.set_sprite_zero_hit(true);
             }
 

@@ -342,11 +342,15 @@ impl<'a> CPU<'a> {
 
     fn lsr(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
-        let value = self.mem_read(addr);
 
-        self.mem_write(addr, (value >> 1) & 0b0111_1111);
-        self.set_flag_else_clear(StatusFlags::Carry, (value & 0b0000_0001) != 0);
-        self.set_flag_else_clear(StatusFlags::Zero, value == 0);
+        let mut data = self.mem_read(addr);
+        self.set_flag_else_clear(StatusFlags::Carry, data & 1 != 0);
+
+        data >>= 1;
+        self.mem_write(addr, data);
+
+        self.set_flag_else_clear(StatusFlags::Zero, data == 0);
+        self.set_flag_else_clear(StatusFlags::Negative, (data & 0x80) != 0);
 
         false
     }
@@ -384,14 +388,19 @@ impl<'a> CPU<'a> {
     }
 
     fn php(&mut self, _mode: &AddressingMode) -> bool {
-        let status = self.status & !StatusFlags::Break.bits();
-        self.stack_push(status);
+        let mut status = self.status.clone();
+        status |= StatusFlags::Break.bits();
+        status |= StatusFlags::Break2.bits();
 
+        self.stack_push(status);
         false
     }
     
     fn pla(&mut self, _mode: &AddressingMode) -> bool {
         self.registers.a = self.stack_pop();
+        self.set_flag_else_clear(StatusFlags::Zero, self.registers.a == 0);
+        self.set_flag_else_clear(StatusFlags::Negative, (self.registers.a & 0x80) != 0);
+
         false
     }
 
@@ -457,7 +466,7 @@ impl<'a> CPU<'a> {
     fn ror(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
         let mut value = self.mem_read(addr);
-        let old_b0 = value & 0b1000_0000;
+        let old_b0 = value & 0b0000_0001;
 
         value >>= 1;
         if self.status & StatusFlags::Carry.bits() == 1 {

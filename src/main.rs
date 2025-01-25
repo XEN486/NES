@@ -10,14 +10,20 @@ mod cpu_test;
 
 use bus::Bus;
 use cartridge::Rom;
+use apu::APU;
+use ppu::PPU;
 use cpu::CPU;
 use render::frame::Frame;
 use joypad::JoypadButton;
 use joypad::Joypad;
 
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
-use sdl2::pixels::PixelFormatEnum;
+use rodio::Source;
+use sdl3::event::Event;
+use sdl3::keyboard::Keycode;
+use sdl3::pixels::PixelFormat;
+use sdl3::sys::pixels::SDL_PIXELFORMAT_RGB24;
+use sdl3::sys::render::SDL_SetTextureScaleMode;
+use sdl3::sys::surface::SDL_ScaleMode;
 use std::time::{Duration, Instant};
 
 fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
@@ -35,31 +41,37 @@ fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
 }
 
 fn main() {
-    // init sdl2
-    let sdl_context = sdl2::init().unwrap();
+    // init sdl3
+    let sdl_context = sdl3::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
     let window = video_subsystem
-        .window("XeNES", (256.0 * 3.0) as u32, (240.0 * 3.0) as u32)
+        .window("XeNES", (256.0 * 4.0) as u32, (240.0 * 4.0) as u32)
         .position_centered()
         .build()
         .unwrap();
 
-    let mut canvas = window.into_canvas().present_vsync().build().unwrap();
+    let mut canvas = window.into_canvas();
     let mut event_pump = sdl_context.event_pump().unwrap();
     canvas.set_scale(3.0, 3.0).unwrap();
 
     let creator = canvas.texture_creator();
-    let mut texture = creator
-        .create_texture_target(PixelFormatEnum::RGB24, 256, 240)
-        .unwrap();
+    let mut texture = unsafe {
+        let t = creator
+            .create_texture_target(PixelFormat::from_ll(SDL_PIXELFORMAT_RGB24), 256, 240)
+            .unwrap();
+
+        SDL_SetTextureScaleMode(t.raw(), SDL_ScaleMode::NEAREST);
+        t
+    };
 
     // load the game
-    let bytes: Vec<u8> = std::fs::read("dk.nes").unwrap();
-    let rom = Rom::new(&bytes).unwrap();
+    let bytes = std::fs::read("smb.nes").expect("Failed to read ROM file");
+    let rom = Rom::new(&bytes).expect("Failed to initialize ROM");
+
     let mut frame = Frame::new();
 
-    let bus = Bus::new(rom, move |ppu, apu, joypad: &mut Joypad, corruption: &mut u8, ram_corruption: &mut u8| {
+    let bus = Bus::new(rom, move |ppu: &PPU, apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8, ram_corruption: &mut u8| {
         render::render(ppu, &mut frame);
         texture.update(None, &frame.data, 256 * 3).unwrap();
 
