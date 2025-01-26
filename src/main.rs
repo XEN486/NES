@@ -7,9 +7,6 @@ mod interrupt;
 mod joypad;
 mod apu;
 
-#[rustfmt::skip]
-mod cpu_test;
-
 use bus::Bus;
 use cartridge::Rom;
 use apu::APU;
@@ -53,7 +50,7 @@ fn main() {
     let video_subsystem = sdl_context.video().unwrap();
 
     let window = video_subsystem
-        .window("fNES", width * scale, height * scale)
+        .window("qNES", width * scale, height * scale)
         .position_centered()
         .build()
         .unwrap();
@@ -73,11 +70,11 @@ fn main() {
     };
 
     // load the game
-    let bytes = std::fs::read("mb.nes").expect("failed to read ROM file");
+    let bytes = std::fs::read("smb.nes").expect("failed to read ROM file");
     let rom = Rom::new(&bytes).expect("failed to initialize ROM");
 
     let mut frame = Frame::new(width as usize, height as usize);
-    let bus = Bus::new(rom, move |ppu: &PPU, apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8, ram_corruption: &mut u8| {
+    let bus = Bus::new(rom, move |ppu: &PPU, apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8,| {
         render::render(ppu, &mut frame);
         texture.update(None, &frame.data, width as usize * 3).unwrap();
 
@@ -95,17 +92,12 @@ fn main() {
                 Event::KeyDown { keycode, .. } => {
                     if keycode == Some(Keycode::KpPlus) {
                         *corruption = corruption.wrapping_add(1);
-                        println!("[BUS] ppu corruption at {}", corruption);
+                        println!("[MAIN] ppu corruption at {}", corruption);
                     }
                     if keycode == Some(Keycode::KpMinus) {
                         *corruption = corruption.wrapping_sub(1);
-                        println!("[BUS] ppu corruption at {}", corruption);
+                        println!("[MAIN] ppu corruption at {}", corruption);
                     }
-                    if keycode == Some(Keycode::KpMultiply) {
-                        *ram_corruption = 255;
-                        println!("[BUS] corrupted ram!")
-                    }
-
                     if let Some(key) = get_button(&keycode.unwrap()) {
                         joypad.set_button_status(key, true);
                     }
@@ -164,12 +156,12 @@ fn main() {
     // Timing constants
     let cpu_clock_hz: u32 = 1_789_773;
     let cycles_per_frame = cpu_clock_hz / 60;
-    let target_frame_duration = Duration::from_secs_f64(1.0 / 60.0);
+    let target_frame_duration: Duration = Duration::from_secs_f64(1.0 / 60.0);
 
     loop {
         let frame_start = Instant::now();
-
         let mut cycles_executed = 0;
+
         while cycles_executed < cycles_per_frame {
             let cycles = cpu.step();
             cycles_executed += cycles as u32;

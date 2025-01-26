@@ -30,6 +30,10 @@ pub struct PPU {
 }
 
 impl PPU {
+    pub fn new_empty_rom() -> PPU {
+        PPU::new(vec![0; 2048], Mirroring::Horizontal)
+    }
+
     pub fn new(chr_rom: Vec<u8>, mirroring: Mirroring) -> PPU {
         PPU {
             chr_rom: chr_rom,
@@ -97,6 +101,12 @@ impl PPU {
             0x3000 ..= 0x3eff => {
                 println!("[PPU] address space 0x3000 -> 0x3eff shouldn't be used. address requested: 0x{:04x}", addr);
                 0
+            }
+
+            // Palette Table Mirrors
+            0x3f10 | 0x3f14 | 0x3f18 | 0x3f1c => {
+                let add_mirror = addr - 0x10;
+                self.palette_table[(add_mirror - 0x3f00) as usize]
             }
             
             // Palette Table
@@ -173,6 +183,8 @@ impl PPU {
 
     pub fn tick(&mut self, cycles: u8) -> bool {
         self.cycles += cycles as usize;
+
+        // wait until 341 cycles pass (341 PPU cycles = 1 scanline)
         if self.cycles >= 341 {
             if self.is_sprite_0_hit(self.cycles) {
                 self.status.set_sprite_zero_hit(true);
@@ -181,6 +193,7 @@ impl PPU {
             self.cycles -= 341;
             self.scanline += 1;
 
+            // set vblank status on scanline 241
             if self.scanline == 241 {
                 self.status.set_vblank_status(true);
                 self.status.set_sprite_zero_hit(false);
@@ -190,6 +203,7 @@ impl PPU {
                 }
             }
 
+            // reset vblank status on scanline 262 (should this not be 261?)
             if self.scanline >= 262 {
                 self.scanline = 0;
                 self.nmi_interrupt = None;

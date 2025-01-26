@@ -39,16 +39,16 @@ fn sprite_palette(ppu: &PPU, palette_idx: u8) -> [u8; 4] {
     ]
 }
 
-fn render_name_table(ppu: &PPU, frame: &mut Frame, name_table: &[u8], 
+fn render_nametable(ppu: &PPU, frame: &mut Frame, nametable: &[u8], 
     view_port: Rect, shift_x: isize, shift_y: isize) {
     let bank = ppu.control.background_pattern_address();
 
-    let attribute_table = &name_table[0x3c0.. 0x400];
+    let attribute_table = &nametable[0x3c0.. 0x400];
 
     for i in 0..0x3c0 {
         let tile_column = i % 32;
         let tile_row = i / 32;
-        let tile_idx = name_table[i] as u16;
+        let tile_idx = nametable[i] as u16;
         let tile = &ppu.chr_rom[(bank + tile_idx * 16) as usize..=(bank + tile_idx * 16 + 15) as usize];
         let palette = bg_palette(ppu, attribute_table, tile_column, tile_row);
 
@@ -98,19 +98,19 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
         }
     };
 
-    render_name_table(ppu, frame, 
+    render_nametable(ppu, frame, 
         main_nametable, 
         Rect::new(scroll_x, scroll_y, frame.width, frame.height ),
         -(scroll_x as isize), -(scroll_y as isize)
     );
     if scroll_x > 0 {
-        render_name_table(ppu, frame, 
+        render_nametable(ppu, frame, 
             second_nametable, 
             Rect::new(0, 0, scroll_x, frame.height),
             (frame.width - scroll_x) as isize, 0
         );
     } else if scroll_y > 0 {
-        render_name_table(ppu, frame, 
+        render_nametable(ppu, frame, 
             second_nametable, 
             Rect::new(0, 0, frame.width, scroll_y),
             0, (frame.height - scroll_y) as isize
@@ -127,11 +127,13 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
         } else {
             false
         };
+
         let flip_horizontal = if ppu.oam_data[i + 2] >> 6 & 1 == 1 {
             true
         } else {
             false
         };
+
         let palette_idx = ppu.oam_data[i + 2] & 0b11;
         let sprite_palette = sprite_palette(ppu, palette_idx);
         let bank: u16 = ppu.control.sprite_pattern_address();
@@ -147,7 +149,7 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
                 upper = upper >> 1;
                 lower = lower >> 1;
                 let mut rgb = match value {
-                    0 => continue 'pixel, // skip coloring the pixel
+                    0 => continue 'pixel, // skip drawing pixel
                     1 => palette::SYSTEM_PALETTE[(sprite_palette[1] % 64) as usize],
                     2 => palette::SYSTEM_PALETTE[(sprite_palette[2] % 64) as usize],
                     3 => palette::SYSTEM_PALETTE[(sprite_palette[3] % 64) as usize],

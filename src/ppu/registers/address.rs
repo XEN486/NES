@@ -1,13 +1,12 @@
-
 pub struct AddressRegister {
     value: (u8, u8),
     hi_ptr: bool,
 }
 
 impl AddressRegister {
-    pub fn new() -> AddressRegister {
+    pub fn new() -> Self {
         AddressRegister {
-            value: (0, 0),
+            value: (0, 0), // high byte first, lo byte second
             hi_ptr: true,
         }
     }
@@ -24,8 +23,8 @@ impl AddressRegister {
             self.value.1 = data;
         }
 
-        // mirror down
         if self.get() > 0x3fff {
+            //mirror down addr above 0x3fff
             self.set(self.get() & 0b11111111111111);
         }
 
@@ -34,15 +33,12 @@ impl AddressRegister {
 
     pub fn increment(&mut self, inc: u8) {
         let lo = self.value.1;
-
         self.value.1 = self.value.1.wrapping_add(inc);
         if lo > self.value.1 {
             self.value.0 = self.value.0.wrapping_add(1);
         }
-
-        // mirror down
         if self.get() > 0x3fff {
-            self.set(self.get() & 0b11111111111111);
+            self.set(self.get() & 0b11111111111111); //mirror down addr above 0x3fff
         }
     }
 

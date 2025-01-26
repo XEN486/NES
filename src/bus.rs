@@ -33,13 +33,12 @@ pub struct Bus<'call> {
     joypad1: Joypad,
 
     cycles: usize,
-    gameloop: Box<dyn FnMut(&PPU, &mut APU, &mut Joypad, &mut u8, &mut u8) + 'call>,
+    gameloop: Box<dyn FnMut(&PPU, &mut APU, &mut Joypad, &mut u8) + 'call>,
     corruption: u8,
-    ram_corruption: u8,
 }
 
 impl<'a> Bus<'a> {
-    pub fn new<'call, F>(rom: Rom, gameloop: F) -> Bus<'call> where F: FnMut(&PPU, &mut APU, &mut Joypad, &mut u8, &mut u8) + 'call {
+    pub fn new<'call, F>(rom: Rom, gameloop: F) -> Bus<'call> where F: FnMut(&PPU, &mut APU, &mut Joypad,  &mut u8) + 'call {
         let ppu = PPU::new(rom.chr_rom, rom.mirroring);
         let apu = APU::new(rom.prg_rom.clone());
 
@@ -54,7 +53,6 @@ impl<'a> Bus<'a> {
             cycles: 0,
             gameloop: Box::from(gameloop),
             corruption: 0,
-            ram_corruption: 0,
         }
     }
 
@@ -63,34 +61,10 @@ impl<'a> Bus<'a> {
     }
 
     fn read_prg_rom(&self, mut addr: u16) -> u8 {
-        let prg_rom_len = self.prg_rom.len() as u16;
         addr -= 0x8000;
-    
-        if prg_rom_len <= 0x4000 {
-            if addr >= 0x4000 {
-                addr %= 0x4000;
-            }
-        } else {
-            match self.mapper {
-                0..=3 => {
-                    if addr >= 0x4000 {
-                        addr %= prg_rom_len;
-                    }
-                }
-                4..=7 => {
-                    if addr >= 0x4000 {
-                        addr %= 0x8000;
-                    }
-                }
-                _ => {
-                    println!("[BUS] unsupported mapper");
-                    if addr >= prg_rom_len {
-                        addr %= prg_rom_len;
-                    }
-                }
-            }
+        if self.prg_rom.len() == 0x4000 && addr >= 0x4000 {
+            addr = addr % 0x4000;
         }
-    
         self.prg_rom[addr as usize]
     }
 
@@ -104,8 +78,9 @@ impl<'a> Bus<'a> {
         let new_frame: bool = self.ppu.tick(cycles * 3); // 1 PPU cycle = 3 CPU cycles
 
         // if the PPU has finished a new frame, we should call the function to update the screen
+        // FIXME: this is inaccurate, the PPU should render every scanline instead of during vblank
         if new_frame {
-            (self.gameloop)(&self.ppu, &mut self.apu, &mut self.joypad1, &mut self.corruption, &mut self.ram_corruption);
+            (self.gameloop)(&self.ppu, &mut self.apu, &mut self.joypad1, &mut self.corruption);
         }
     }
 
@@ -159,7 +134,6 @@ impl Mem for Bus<'_> {
 
     fn mem_write(&mut self, addr: u16, data: u8) {
         let mut corrupted = data;
-        let mut ram_corrupted = data;
 
         if self.corruption != 0 {
             corrupted = corrupted.wrapping_add(rand::thread_rng().gen_range(0..self.corruption));
@@ -168,18 +142,14 @@ impl Mem for Bus<'_> {
         match addr {
             // RAM & RAM mirrors
             0x0000 ..= 0x1FFF => {
-                if self.ram_corruption != 0 {
-                    ram_corrupted = ram_corrupted.wrapping_shr(rand::thread_rng().gen_range(0..self.ram_corruption) as u32);
-                }
-                let mirror_down_addr = addr & 0b11111111111;
-                self.cpu_vram[mirror_down_addr as usize] = ram_corrupted;
-                ram_corrupted = data;
-                self.ram_corruption = 0;
+                let mirror_down_addr = addr & 0b00000111_11111111;
+                self.cpu_vram[mirror_down_addr as usize] = data;
             }
 
             // PPU registers
             0x2000 => self.ppu.write_to_control(data),
             0x2001 => self.ppu.write_to_mask(corrupted),
+            0x2002 => println!("[BUS] attempted to write to PPU status"),
             0x2003 => self.ppu.write_to_oam_address(data),
             0x2004 => self.ppu.write_to_oam_data(corrupted),
             0x2005 => self.ppu.write_to_scroll(data),
@@ -218,7 +188,7 @@ impl Mem for Bus<'_> {
 
             // Unknown
             _ => {
-                println!("[BUS] attempting to write to unknown memory @ 0x{:04x}", addr);
+                println!("[BUS] ignoring write to unknown memory @ 0x{:04x}", addr);
             }
         }
     }
