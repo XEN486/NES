@@ -11,74 +11,83 @@ mod mapper;
 use bus::Bus;
 use cartridge::Rom;
 use apu::APU;
-use cpal::traits::{HostTrait, DeviceTrait, };//StreamTrait};
+use cpal::traits::{HostTrait, DeviceTrait};
 use ppu::PPU;
 use cpu::CPU;
 use render::frame::Frame;
-use joypad::JoypadButton;
-use joypad::Joypad;
+use joypad::{Joypad, JoypadButton};
 
-use sdl3::event::Event;
-use sdl3::keyboard::Keycode;
-use sdl3::pixels::PixelFormat;
-use sdl3::sys::pixels::SDL_PIXELFORMAT_RGB24;
-use sdl3::sys::render::SDL_SetTextureScaleMode;
-use sdl3::sys::surface::SDL_ScaleMode;
+use sdl3::{event::Event, keyboard::Keycode, pixels::PixelFormat};
+use sdl3::sys::{pixels::SDL_PIXELFORMAT_RGB24, render::SDL_SetTextureScaleMode, surface::SDL_ScaleMode};
+
+use rfd::FileDialog;
 
 use std::time::{Duration, Instant};
+use std::env;
 
 fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
     match keycode {
-        &Keycode::Down => Some(JoypadButton::Down),
-        &Keycode::Up => Some(JoypadButton::Up),
-        &Keycode::Right => Some(JoypadButton::Right),
-        &Keycode::Left => Some(JoypadButton::Left),
-        &Keycode::Space => Some(JoypadButton::Select),
-        &Keycode::Return => Some(JoypadButton::Start),
-        &Keycode::A => Some(JoypadButton::A),
-        &Keycode::S => Some(JoypadButton::B),
+        Keycode::Down => Some(JoypadButton::Down),
+        Keycode::Up => Some(JoypadButton::Up),
+        Keycode::Right => Some(JoypadButton::Right),
+        Keycode::Left => Some(JoypadButton::Left),
+        Keycode::Space => Some(JoypadButton::Select),
+        Keycode::Return => Some(JoypadButton::Start),
+        Keycode::A => Some(JoypadButton::A),
+        Keycode::S => Some(JoypadButton::B),
         _ => None,
     }
 }
 
 fn main() {
-    let width: u32 = 256;
-    let height: u32 = 240;
-    let scale: u32 = 4;
+    // constants
+    const WIDTH: u32 = 256;
+    const HEIGHT: u32 = 240;
+    const SCALE: u32 = 4;
+    const CPU_CLOCK_HZ: u32 = 1_789_773;
+    const TARGET_FPS: u32 = 60;
 
-    // init sdl3
+    // get rom path
+    let rom_path = env::args().nth(1).unwrap_or_else(|| {
+        FileDialog::new()
+            .add_filter("NES ROMs", &["nes"])
+            .pick_file()
+            .expect("[MAIN] failed to open file dialog")
+            .to_str()
+            .unwrap()
+            .to_string()
+    });
+
+    // initialize SDL3
     let sdl_context = sdl3::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
-
     let window = video_subsystem
-        .window("pNES", width * scale, height * scale)
+        .window("pNES", WIDTH * SCALE, HEIGHT * SCALE)
         .position_centered()
         .build()
         .unwrap();
 
     let mut canvas = window.into_canvas();
     let mut event_pump = sdl_context.event_pump().unwrap();
-    canvas.set_scale(scale as f32, scale as f32).unwrap();
+    canvas.set_scale(SCALE as f32, SCALE as f32).unwrap();
 
     let creator = canvas.texture_creator();
     let mut texture = unsafe {
         let t = creator
-            .create_texture_target(PixelFormat::from_ll(SDL_PIXELFORMAT_RGB24), width, height)
+            .create_texture_target(PixelFormat::from_ll(SDL_PIXELFORMAT_RGB24), WIDTH, HEIGHT)
             .unwrap();
-
         SDL_SetTextureScaleMode(t.raw(), SDL_ScaleMode::NEAREST);
         t
     };
 
     // load the game
-    let bytes = std::fs::read("ice climber.nes").expect("failed to read ROM file");
-    let rom = Rom::new(&bytes).expect("failed to initialize ROM");
+    let rom_bytes = std::fs::read(rom_path).expect("[MAIN] failed to read ROM file");
+    let rom = Rom::new(&rom_bytes).expect("[MAIN] failed to initialize ROM");
+    let mut frame = Frame::new(WIDTH as usize, HEIGHT as usize);
 
-    let mut frame = Frame::new(width as usize, height as usize);
-    let bus = Bus::new(rom, move |ppu: &PPU, _apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8,| {
+    let bus = Bus::new(rom, move |ppu: &PPU, _apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8| {
         render::render(ppu, &mut frame);
-        texture.update(None, &frame.data, width as usize * 3).unwrap();
-
+        texture.update(None, &frame.data, WIDTH as usize * 3).unwrap();
         canvas.copy(&texture, None, None).unwrap();
         canvas.present();
 
@@ -91,22 +100,30 @@ fn main() {
                 } => std::process::exit(0),
 
                 Event::KeyDown { keycode, .. } => {
-                    if keycode == Some(Keycode::KpPlus) {
-                        *corruption = corruption.wrapping_add(1);
-                        println!("[MAIN] ppu corruption at {}", corruption);
-                    }
-                    if keycode == Some(Keycode::KpMinus) {
-                        *corruption = corruption.wrapping_sub(1);
-                        println!("[MAIN] ppu corruption at {}", corruption);
-                    }
-                    if let Some(key) = get_button(&keycode.unwrap()) {
-                        joypad.set_button_status(key, true);
+                    if let Some(key) = keycode {
+                        match key {
+                            Keycode::KpPlus => {
+                                *corruption = corruption.wrapping_add(1);
+                                println!("[MAIN] PPU corruption at {}", corruption);
+                            }
+                            Keycode::KpMinus => {
+                                *corruption = corruption.wrapping_sub(1);
+                                println!("[MAIN] PPU corruption at {}", corruption);
+                            }
+                            _ => {
+                                if let Some(button) = get_button(&key) {
+                                    joypad.set_button_status(button, true);
+                                }
+                            }
+                        }
                     }
                 }
 
                 Event::KeyUp { keycode, .. } => {
-                    if let Some(key) = get_button(&keycode.unwrap()) {
-                        joypad.set_button_status(key, false);
+                    if let Some(key) = keycode {
+                        if let Some(button) = get_button(&key) {
+                            joypad.set_button_status(button, false);
+                        }
                     }
                 }
 
@@ -115,58 +132,51 @@ fn main() {
         }
     });
 
+    // setup audio
     let buffer = bus.get_apu_buffer();
     let host = cpal::default_host();
-    let device = host.default_output_device().expect("no output device available");
-    let config = device.default_output_config().expect("failed to get default config");
+    let device = host.default_output_device().expect("[MAIN] no output device available");
+    let config = device.default_output_config().expect("[MAIN] failed to get default config");
 
     assert_eq!(
         config.sample_format(),
         cpal::SampleFormat::F32,
-        "the audio device does not support f32 format"
+        "[MAIN] the audio device does not support f32 format"
     );
 
     let stream_config = config.into();
 
-    // Create the audio stream
     let _stream = device
         .build_output_stream(
             &stream_config,
             move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
-                let mut buffer_lock = buffer.lock().expect("failed to lock buffer");
-
+                let mut buffer_lock = buffer.lock().expect("[MAIN] failed to lock buffer");
                 for frame in data.iter_mut() {
-                    // Fetch the next sample or play silence if the buffer is empty
                     *frame = buffer_lock.pop().unwrap_or(0.0);
                 }
             },
             move |err| {
-                eprintln!("an error occurred on the audio stream: {}", err);
+                eprintln!("[MAIN] audio stream error: {}", err);
             },
-            None
+            None,
         )
-        .expect("failed to build audio stream");
+        .expect("[MAIN] failed to build audio stream");
 
-    // Play the audio stream
-    //stream.play().expect("failed to play stream");
-
+    // setup CPU
     let mut cpu = CPU::new(bus);
     cpu.reset();
-    //cpu.pc = 0xC000;
 
-    // Timing constants
-    let cpu_clock_hz: u32 = 1_789_773;
-    let cycles_per_frame = cpu_clock_hz / 60;
-    let target_frame_duration: Duration = Duration::from_secs_f64(1.0 / 60.0);
+    // setup timing
+    let target_frame_duration: Duration = Duration::from_secs_f64(1.0 / TARGET_FPS as f64);
+    let cycles_per_frame: u32 = CPU_CLOCK_HZ / 60;
 
+    // main loop
     loop {
         let frame_start = Instant::now();
         let mut cycles_executed = 0;
 
         while cycles_executed < cycles_per_frame {
-            //println!("{}", cpu.trace());
-            let cycles = cpu.step();
-            cycles_executed += cycles as u32;
+            cycles_executed += cpu.step() as u32;
         }
 
         let elapsed = frame_start.elapsed();
