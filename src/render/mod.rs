@@ -98,23 +98,41 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
         }
     };
 
-    render_nametable(ppu, frame, 
-        main_nametable, 
-        Rect::new(scroll_x, scroll_y, frame.width, frame.height ),
-        -(scroll_x as isize), -(scroll_y as isize)
-    );
-    if scroll_x > 0 {
-        render_nametable(ppu, frame, 
-            second_nametable, 
-            Rect::new(0, 0, scroll_x, frame.height),
-            (frame.width - scroll_x) as isize, 0
+    // only show the background if it's enabled in the mask register
+    if ppu.mask.show_background() {
+        // main nametable
+        render_nametable(
+            ppu,
+            frame, 
+            main_nametable, 
+            Rect::new(scroll_x, scroll_y, frame.width, frame.height ),
+            -(scroll_x as isize), -(scroll_y as isize)
         );
-    } else if scroll_y > 0 {
-        render_nametable(ppu, frame, 
-            second_nametable, 
-            Rect::new(0, 0, frame.width, scroll_y),
-            0, (frame.height - scroll_y) as isize
-        );
+
+        // screen 2
+        if scroll_x > 0 {
+            render_nametable(
+                ppu,
+                frame, 
+                second_nametable, 
+                Rect::new(0, 0, scroll_x, frame.height),
+                (frame.width - scroll_x) as isize, 0
+            );
+        } else if scroll_y > 0 {
+            render_nametable(
+                ppu,
+                frame, 
+                second_nametable, 
+                Rect::new(0, 0, frame.width, scroll_y),
+                0, (frame.height - scroll_y) as isize
+            );
+        }
+
+    }
+
+    // don't show sprites if they are disabled in the mask register
+    if !ppu.mask.show_sprites() {
+        return;
     }
 
     for i in (0..ppu.oam_data.len()).step_by(4).rev() {
@@ -161,16 +179,16 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
 
                 match (flip_horizontal, flip_vertical) {
                     (false, false) => {
-                        frame.set_pixel(tile_x + x , tile_y + y, rgb);
+                        frame.set_pixel(tile_x + x, tile_y + y, rgb);
                     },
                     (true, false) => {
-                        frame.set_pixel(tile_x + 7 - x , tile_y + y , rgb);
+                        frame.set_pixel(tile_x + 7 - x, tile_y + y, rgb);
                     }
                     (false, true) => {
-                        frame.set_pixel(tile_x + x  , tile_y + 7 - y, rgb);
+                        frame.set_pixel(tile_x + x, tile_y + 7 - y, rgb);
                     }
                     (true, true) => {
-                        frame.set_pixel(tile_x + 7 - x , tile_y + 7 - y , rgb);
+                        frame.set_pixel(tile_x + 7 - x, tile_y + 7 - y, rgb);
                     }
                 }
             }

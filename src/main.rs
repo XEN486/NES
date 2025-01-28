@@ -6,6 +6,7 @@ mod render;
 mod interrupt;
 mod joypad;
 mod apu;
+mod mapper;
 
 use bus::Bus;
 use cartridge::Rom;
@@ -50,7 +51,7 @@ fn main() {
     let video_subsystem = sdl_context.video().unwrap();
 
     let window = video_subsystem
-        .window("qNES", width * scale, height * scale)
+        .window("pNES", width * scale, height * scale)
         .position_centered()
         .build()
         .unwrap();
@@ -70,7 +71,7 @@ fn main() {
     };
 
     // load the game
-    let bytes = std::fs::read("smb.nes").expect("failed to read ROM file");
+    let bytes = std::fs::read("dk3.nes").expect("failed to read ROM file");
     let rom = Rom::new(&bytes).expect("failed to initialize ROM");
 
     let mut frame = Frame::new(width as usize, height as usize);
