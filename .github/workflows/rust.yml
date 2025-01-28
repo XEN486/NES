@@ -18,9 +18,9 @@ jobs:
     - name: Install SDL3 from source
       run: |
         sudo apt-get install -y cmake g++ wget
-        wget https://github.com/libsdl-org/SDL/releases/download/release-3.0.0/SDL3-3.0.0.tar.gz
-        tar -xvzf SDL3-3.0.0.tar.gz
-        cd SDL3-3.0.0
+        wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.0/SDL3-3.2.0.tar.gz
+        tar -xvzf SDL3-3.2.0.tar.gz
+        cd SDL3-3.2.0
         ./configure
         make
         sudo make install
