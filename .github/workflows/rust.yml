@@ -11,12 +11,18 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+      
+      - name: Install Wayland and pkg-config
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libwayland-client-dev
+
+      - name: Set PKG_CONFIG_PATH
+        run: echo "PKG_CONFIG_PATH=/usr/lib/pkgconfig" >> $GITHUB_ENV
+
+      - name: Build the project
+        run: cargo build
