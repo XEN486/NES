@@ -3,8 +3,6 @@
 
 pNES is a small NES emulator written in Rust that I have been working on.
 
-The emulator has only been tested on Windows, but it should work on Linux/MacOS.
-
 ## What works?
 I'm mostly sure that the APU is generating the correct samples, but playing the audio doesn't seem to work.
 
