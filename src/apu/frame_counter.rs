@@ -74,6 +74,8 @@ impl FrameCounter {
         }
     }
 
+    // TODO: should this be used??
+    /*
     pub fn tick_mode_one(&mut self) -> FrameCounterResult {
         match self.counter {
             7_459 => FrameCounterResult::Quarter,
@@ -88,6 +90,7 @@ impl FrameCounter {
             _ => FrameCounterResult::None,
         }
     }
+    */
 
     pub fn set_irq(&mut self) {
         // only set irq if irqs are enabled

@@ -26,6 +26,8 @@ impl StatusRegister {
         self.set(StatusRegister::SpriteZeroHit, status);
     }
 
+    #[allow(dead_code)]
+    // TODO: add a toggle to disable sprite overflow instead of forcing it disabled?
     pub fn set_sprite_overflow(&mut self, status: bool) {
         self.set(StatusRegister::SpriteOverflow, status);
     }

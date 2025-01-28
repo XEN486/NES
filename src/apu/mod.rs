@@ -156,10 +156,6 @@ impl APU {
         }
     }
 
-    pub fn clear_buffer(&mut self) {
-        self.buffer.lock().expect("Failed to get buffer").clear();
-    }
-
     fn sample(&mut self) -> f32 {
         // sample each channel
         let p0 = self.pulse_0.sample() as f64;

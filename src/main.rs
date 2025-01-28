@@ -11,7 +11,7 @@ mod mapper;
 use bus::Bus;
 use cartridge::Rom;
 use apu::APU;
-use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
+use cpal::traits::{HostTrait, DeviceTrait, };//StreamTrait};
 use ppu::PPU;
 use cpu::CPU;
 use render::frame::Frame;
@@ -71,11 +71,11 @@ fn main() {
     };
 
     // load the game
-    let bytes = std::fs::read("dk3.nes").expect("failed to read ROM file");
+    let bytes = std::fs::read("ice climber.nes").expect("failed to read ROM file");
     let rom = Rom::new(&bytes).expect("failed to initialize ROM");
 
     let mut frame = Frame::new(width as usize, height as usize);
-    let bus = Bus::new(rom, move |ppu: &PPU, apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8,| {
+    let bus = Bus::new(rom, move |ppu: &PPU, _apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8,| {
         render::render(ppu, &mut frame);
         texture.update(None, &frame.data, width as usize * 3).unwrap();
 
@@ -129,7 +129,7 @@ fn main() {
     let stream_config = config.into();
 
     // Create the audio stream
-    let stream = device
+    let _stream = device
         .build_output_stream(
             &stream_config,
             move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
@@ -164,6 +164,7 @@ fn main() {
         let mut cycles_executed = 0;
 
         while cycles_executed < cycles_per_frame {
+            //println!("{}", cpu.trace());
             let cycles = cpu.step();
             cycles_executed += cycles as u32;
         }

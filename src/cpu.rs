@@ -213,11 +213,11 @@ impl<'a> CPU<'a> {
         self.stack_push_u16(self.pc);
         let mut flag = self.status.clone();
 
-        if interrupt.flag_mask & 0b0001_0000 != 0 {
+        if interrupt.mask & 0b0001_0000 != 0 {
             flag |= StatusFlags::Break2.bits();
         }
 
-        if interrupt.flag_mask & 0b0010_0000 != 0 {
+        if interrupt.mask & 0b0010_0000 != 0 {
             flag &= !StatusFlags::Break.bits();
         }
 
@@ -225,7 +225,7 @@ impl<'a> CPU<'a> {
         self.set_flag(StatusFlags::InterruptDisable);
 
         self.bus.tick(interrupt.cycles);
-        self.pc = self.mem_read_u16(interrupt.vector_address);
+        self.pc = self.mem_read_u16(interrupt.vector);
     }
     
     pub fn step_with_callback<F>(&mut self, mut callback: F) -> u8 where F: FnMut(&mut CPU) {

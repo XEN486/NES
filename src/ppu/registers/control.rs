@@ -60,6 +60,8 @@ impl ControlRegister {
         }
     }
 
+    #[allow(dead_code)]
+    // this is an unused feature on the NES.
     pub fn master_slave_select(&self) -> u8 {
         if !self.contains(ControlRegister::MasterSlaveSelect) {
             0

@@ -3,23 +3,24 @@ pub enum InterruptType {
     BRK,
 }
 
+#[allow(dead_code)]
 pub struct Interrupt {
     pub interrupt_type: InterruptType,
-    pub vector_address: u16,
-    pub flag_mask: u8,
+    pub vector: u16,
+    pub mask: u8,
     pub cycles: u8,
 }
 
 pub const NMI: Interrupt = Interrupt {
     interrupt_type: InterruptType::NMI,
-    vector_address: 0xFFFA,
-    flag_mask: 0b0010_0000,
+    vector: 0xFFFA,
+    mask: 0b0010_0000,
     cycles: 2,
 };
 
 pub const BRK: Interrupt = Interrupt {
     interrupt_type: InterruptType::BRK,
-    vector_address: 0xFFFE,
-    flag_mask: 0b0011_0000,
+    vector: 0xFFFE,
+    mask: 0b0011_0000,
     cycles: 1,
 };

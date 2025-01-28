@@ -74,6 +74,11 @@ fn render_nametable(ppu: &PPU, frame: &mut Frame, nametable: &[u8],
                 let pixel_x = tile_column * 8 + x;
                 let pixel_y = tile_row * 8 + y;
 
+                // leftmost 8 pixel background
+                if pixel_x < 8 && !ppu.mask.leftmost_8pixel_background() {
+                    continue;
+                }
+
                 if pixel_x >= view_port.x1 && pixel_x < view_port.x2 && pixel_y >= view_port.y1 && pixel_y < view_port.y2 {
                     frame.set_pixel((shift_x + pixel_x as isize) as usize, (shift_y + pixel_y as isize) as usize, rgb);
                 }
@@ -129,7 +134,6 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
         }
 
     }
-
     // don't show sprites if they are disabled in the mask register
     if !ppu.mask.show_sprites() {
         return;
@@ -139,6 +143,11 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
         let tile_idx = ppu.oam_data[i + 1] as u16;
         let tile_x = ppu.oam_data[i + 3] as usize;
         let tile_y = ppu.oam_data[i] as usize;
+
+        // leftmost 8pixel sprite
+        if tile_x < 8 && !ppu.mask.leftmost_8pixel_sprite() {
+            continue;
+        }
 
         let flip_vertical = if ppu.oam_data[i + 2] >> 7 & 1 == 1 {
             true
@@ -156,8 +165,16 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
         let sprite_palette = sprite_palette(ppu, palette_idx);
         let bank: u16 = ppu.control.sprite_pattern_address();
 
-        let tile =
-            &ppu.chr_rom[(bank + tile_idx * 16) as usize..=(bank + tile_idx * 16 + 15) as usize];
+        let sprite_height = ppu.control.sprite_size();
+        let tile = if sprite_height == 16 {
+            // 8x16 sprite
+            let bank = tile_idx & 1;
+            &ppu.chr_rom[((bank as u16 * 0x1000) + (tile_idx & 0xFE) as u16 * 16) as usize
+                ..=((bank as u16 * 0x1000) + (tile_idx & 0xFE) as u16 * 16 + 31) as usize]
+        } else {
+            // 8x8 sprite
+            &ppu.chr_rom[(bank + tile_idx * 16) as usize..=(bank + tile_idx * 16 + 15) as usize]
+        };
 
         for y in 0..=7 {
             let mut upper = tile[y];

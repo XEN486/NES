@@ -30,10 +30,6 @@ pub struct PPU {
 }
 
 impl PPU {
-    pub fn new_empty_rom() -> PPU {
-        PPU::new(vec![0; 2048], Mirroring::Horizontal)
-    }
-
     pub fn new(chr_rom: Vec<u8>, mirroring: Mirroring) -> PPU {
         PPU {
             chr_rom: chr_rom,
