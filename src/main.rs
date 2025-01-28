@@ -50,7 +50,7 @@ fn main() {
     // get rom path
     let rom_path = env::args().nth(1).unwrap_or_else(|| {
         FileDialog::new()
-            .add_filter("NES ROMs", &["nes"])
+            .add_filter("iNES ROMs", &["nes"])
             .pick_file()
             .expect("[MAIN] failed to open file dialog")
             .to_str()
