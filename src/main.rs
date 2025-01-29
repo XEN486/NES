@@ -44,11 +44,49 @@ fn main() {
     const WIDTH: u32 = 256;
     const HEIGHT: u32 = 240;
     const SCALE: u32 = 4;
-    const CPU_CLOCK_HZ: u32 = 1_789_773;
-    const TARGET_FPS: u32 = 60;
 
-    // get rom path
-    let rom_path = env::args().nth(1).unwrap_or_else(|| {
+    // cpu timing
+    let mut cpu_clock_hz: u32 = 1_789_773;
+    let mut target_fps: u32 = 60;
+
+    // collect args and filter out known flags
+    let args: Vec<String> = env::args().collect();
+    let mut rom_path: Option<String> = None;
+
+    for arg in &args[1..] {
+        match arg.as_str() {
+            "--pal" => {
+                cpu_clock_hz = 1_662_607;
+                target_fps = 50;
+                println!(
+                    "[MAIN] Using PAL timing ({:.6} MHz, {} FPS)", 
+                    cpu_clock_hz as f64 / 1_000_000.0, 
+                    target_fps
+                );
+            }
+            "--ntsc" => {
+                println!(
+                    "[MAIN] Using NTSC timing ({:.6} MHz, {} FPS)", 
+                    cpu_clock_hz as f64 / 1_000_000.0, 
+                    target_fps
+                );
+            }
+            "--help" => {
+                println!(
+                    "Arguments:\n  --pal        Use PAL timing for the CPU\n  --ntsc       Use NTSC timing for the CPU\n"
+                );
+                std::process::exit(0);
+            }
+            _ => {
+                if rom_path.is_none() {
+                    rom_path = Some(arg.clone());
+                }
+            }
+        }
+    }
+
+    // if no ROM path was provided, open file dialog
+    let rom_path = rom_path.unwrap_or_else(|| {
         FileDialog::new()
             .add_filter("iNES ROMs", &["nes"])
             .pick_file()
@@ -167,8 +205,8 @@ fn main() {
     cpu.reset();
 
     // setup timing
-    let target_frame_duration: Duration = Duration::from_secs_f64(1.0 / TARGET_FPS as f64);
-    let cycles_per_frame: u32 = CPU_CLOCK_HZ / 60;
+    let target_frame_duration: Duration = Duration::from_secs_f64(1.0 / target_fps as f64);
+    let cycles_per_frame: u32 = cpu_clock_hz / 60;
 
     // main loop
     loop {
