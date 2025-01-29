@@ -111,7 +111,7 @@ impl Mem for Bus<'_> {
         let mut corrupted = data;
 
         if self.corruption != 0 {
-            corrupted = corrupted.wrapping_add(rand::thread_rng().gen_range(0..self.corruption));
+            corrupted = corrupted.wrapping_add(rand::rng().random_range(0..self.corruption));
         }
 
         match addr {
