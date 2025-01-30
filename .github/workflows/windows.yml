@@ -1,21 +1,24 @@
 name: windows
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
 env:
   CARGO_TERM_COLOR: always
+
 jobs:
   build:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install precompiled SDL3 libraries (Visual Studio)
+    - name: Download SDL3
       run: |
-        cmd /c "curl -L 'https://github.com/libsdl-org/SDL/releases/download/release-3.2.0/SDL3-devel-3.2.0-VC.zip' -o SDL3-devel-3.2.0-VC.zip"
-        cmd /c "powershell -Command 'Expand-Archive -Path SDL3-devel-3.2.0-VC.zip -DestinationPath SDL3-devel-3.2.0'"
-        cmd /c "cd SDL3-devel-3.2.0\lib\x64 && copy *.lib D:\a\NES\NES\"
+        Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-3.2.0/SDL3-devel-3.2.0-VC.zip" -OutFile "SDL3.zip"
+        Expand-Archive -Path "SDL3.zip" -DestinationPath "SDL3"
+        Move-Item -Path "SDL3\lib\x64\*.lib" -Destination "$(PWD)"
     - name: Build
       run: cmd /c "cargo build --verbose"
     - name: Run tests
