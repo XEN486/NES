@@ -11,9 +11,6 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install dependencies
-      run: |
-        choco install git
     - name: Install precompiled SDL3 libraries (Visual Studio)
       run: |
         Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-3.2.0/SDL3-devel-3.2.0-VC.zip" -OutFile "SDL3-devel-3.2.0-VC.zip"
