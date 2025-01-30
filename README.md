@@ -4,6 +4,7 @@
 ![macos build](https://github.com/XEN486/NES/actions/workflows/macos.yml/badge.svg)
 
 pNES is a small NES emulator written in Rust that I have been working on.
+![donkey kong 3](images/iceclimber.png)
 
 ## What works?
 I'm mostly sure that the APU is generating the correct samples, but playing the audio doesn't seem to work.
