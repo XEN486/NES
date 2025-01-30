@@ -14,17 +14,7 @@ jobs:
     - name: Install dependencies
       run: |
         brew update
-        brew install git make cmake ninja pkg-config gnome-desktop-testing libasound2 libpulse libaudio libjack libsndio libx11 libxext libxrandr libxcursor libxfixes libxi libxss libxkbcommon libdrm libgl libgles libegl dbus libibus libudev fcitx libpipewire libwayland libdecor liburing
-    - name: Install SDL3 from source
-      run: |
-        wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.0/SDL3-3.2.0.tar.gz
-        tar -xvzf SDL3-3.2.0.tar.gz
-        cd SDL3-3.2.0
-        mkdir build
-        cd build
-        cmake ..
-        make
-        sudo make install
+        brew install git make cmake ninja pkg-config sdl3
     - name: Build
       run: cargo build --verbose
     - name: Run tests
