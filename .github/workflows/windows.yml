@@ -15,12 +15,7 @@ jobs:
       run: |
         Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-3.2.0/SDL3-devel-3.2.0-VC.zip" -OutFile "SDL3-devel-3.2.0-VC.zip"
         Expand-Archive -Path "SDL3-devel-3.2.0-VC.zip" -DestinationPath "SDL3-devel-3.2.0"
-        
-        $env:SDL3_INCLUDE = "$(PWD)\SDL3-devel-3.2.0\include"
-        $env:SDL3_LIB = "$(PWD)\SDL3-devel-3.2.0\lib\x64"
-        
-        $env:LIB += ";$env:SDL3_LIB"
-        $env:INCLUDE += ";$env:SDL3_INCLUDE"
+        $env:PATH += ";$(PWD)\SDL3-devel-3.2.0\lib\x64"
     - name: Build
       run: cargo build --verbose
     - name: Run tests
