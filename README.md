@@ -1,5 +1,5 @@
 # pNES
-![build workflow](https://github.com/XEN486/NES/actions/workflows/build.yml/badge.svg)
+![linux build](https://github.com/XEN486/NES/actions/workflows/linux.yml/badge.svg)
 
 pNES is a small NES emulator written in Rust that I have been working on.
 
