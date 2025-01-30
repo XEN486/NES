@@ -8,13 +8,17 @@ env:
   CARGO_TERM_COLOR: always
 jobs:
   build:
-    runs-on: fedora-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install dependencies
+    - name: Enable Debian Experimental Repo & Install SDL3
       run: |
-        sudo dnf update -y
-        sudo dnf install -y pkg-config alsa-lib-devel wayland-devel SDL3-devel
+        echo "deb http://deb.debian.org/debian experimental main" | sudo tee /etc/apt/sources.list.d/debian-experimental.list
+        sudo apt-get update
+        sudo apt-get -t experimental install -y libsdl3-dev
+    - name: Install other dependencies
+      run: |
+        sudo apt-get install -y pkg-config libasound2-dev libwayland-dev
     - name: Build
       run: cargo build --verbose
     - name: Run tests
