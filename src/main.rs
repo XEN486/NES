@@ -99,6 +99,7 @@ fn main() {
     // initialize SDL3
     let sdl_context = sdl3::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
+
     let window = video_subsystem
         .window("pNES", WIDTH * SCALE, HEIGHT * SCALE)
         .position_centered()
@@ -144,10 +145,12 @@ fn main() {
                                 *corruption = corruption.wrapping_add(1);
                                 println!("[MAIN] PPU corruption at {}", corruption);
                             }
+                            
                             Keycode::KpMinus => {
                                 *corruption = corruption.wrapping_sub(1);
                                 println!("[MAIN] PPU corruption at {}", corruption);
                             }
+
                             _ => {
                                 if let Some(button) = get_button(&key) {
                                     joypad.set_button_status(button, true);
