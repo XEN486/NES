@@ -15,8 +15,10 @@ jobs:
       run: |
         brew update
         brew install git make cmake ninja pkg-config sdl3
+    - name: Set library paths
+      run: |
         export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
-        brew link sdl3
+        export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:$PKG_CONFIG_PATH"
     - name: Build
       run: cargo build --verbose
     - name: Run tests
