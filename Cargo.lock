@@ -986,7 +986,6 @@ dependencies = [
  "bitfield",
  "bitflags 2.8.0",
  "cpal",
- "once_cell",
  "rand 0.9.0",
  "rfd",
  "sdl3",
