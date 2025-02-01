@@ -62,7 +62,7 @@ fn main() -> Result<(), std::io::Error> {
                     pal_path = Some(args[i + 1].clone());
                     i += 1;
                 } else {
-                    panic!("Error: --pal requires a palette file path");
+                    panic!("Error: --palette requires a palette file path");
                 }
             }
 
@@ -86,7 +86,7 @@ fn main() -> Result<(), std::io::Error> {
 
             "--help" => {
                 println!(
-                    "Arguments:\n  --pal <path>  Use PAL timing and load palette from <path>\n  --ntsc       Use NTSC timing for the CPU\n  --help       Show this help message\n"
+                    "Arguments:\n  --palette <path>   Uses the custom palette at <path>\n  --pal              Use PAL timing for the CPU\n  --ntsc             Use NTSC timing for the CPU\n  --help             Show this help message\n"
                 );
                 std::process::exit(0);
             }
