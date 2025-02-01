@@ -60,16 +60,13 @@ fn render_nametable(ppu: &PPU, frame: &mut Frame, nametable: &[u8],
                 let value = (1 & lower) << 1 | (1 & upper);
                 upper = upper >> 1;
                 lower = lower >> 1;
-                let mut rgb = match value {
-                    0 => palette::SYSTEM_PALETTE[(ppu.palette_table[0] % 64) as usize],
-                    1 => palette::SYSTEM_PALETTE[(palette[1] % 64) as usize],
-                    2 => palette::SYSTEM_PALETTE[(palette[2] % 64) as usize],
-                    3 => palette::SYSTEM_PALETTE[(palette[3] % 64) as usize],
-                    _ => panic!("[PPU] shouldn't happen"),
+                let rgb = match value {
+                    0 => palette::get_colour(ppu.palette_table[0] % 64, ppu.mask.emphasize(), ppu.mask.is_greyscale()),
+                    1 => palette::get_colour(palette[1] % 64, ppu.mask.emphasize(), ppu.mask.is_greyscale()),
+                    2 => palette::get_colour(palette[2] % 64, ppu.mask.emphasize(), ppu.mask.is_greyscale()),
+                    3 => palette::get_colour(palette[3] % 64, ppu.mask.emphasize(), ppu.mask.is_greyscale()),
+                    _ => unreachable!("[PPU] impossible palette colour"),
                 };
-
-                frame.apply_emphasis(&mut rgb, ppu.mask.emphasize());
-                frame.apply_greyscale(&mut rgb, ppu.mask.is_greyscale());
 
                 let pixel_x = tile_column * 8 + x;
                 let pixel_y = tile_row * 8 + y;
@@ -183,16 +180,14 @@ pub fn render(ppu: &PPU, frame: &mut Frame) {
                 let value = (1 & lower) << 1 | (1 & upper);
                 upper = upper >> 1;
                 lower = lower >> 1;
-                let mut rgb = match value {
-                    0 => continue 'pixel, // skip drawing pixel
-                    1 => palette::SYSTEM_PALETTE[(sprite_palette[1] % 64) as usize],
-                    2 => palette::SYSTEM_PALETTE[(sprite_palette[2] % 64) as usize],
-                    3 => palette::SYSTEM_PALETTE[(sprite_palette[3] % 64) as usize],
-                    _ => panic!("[RENDER] impossible pixel"),
-                };
 
-                frame.apply_emphasis(&mut rgb, ppu.mask.emphasize());
-                frame.apply_greyscale(&mut rgb, ppu.mask.is_greyscale());
+                let rgb = match value {
+                    0 => continue 'pixel, // skip drawing pixel
+                    1 => palette::get_colour(sprite_palette[1] % 64, ppu.mask.emphasize(), ppu.mask.is_greyscale()),
+                    2 => palette::get_colour(sprite_palette[2] % 64, ppu.mask.emphasize(), ppu.mask.is_greyscale()),
+                    3 => palette::get_colour(sprite_palette[3] % 64, ppu.mask.emphasize(), ppu.mask.is_greyscale()),
+                    _ => unreachable!("[PPU] impossible palette colour"),
+                };
 
                 match (flip_horizontal, flip_vertical) {
                     (false, false) => {

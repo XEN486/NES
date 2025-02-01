@@ -39,7 +39,7 @@ fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
     }
 }
 
-fn main() {
+fn main() -> Result<(), std::io::Error> {
     // constants
     const WIDTH: u32 = 256;
     const HEIGHT: u32 = 240;
@@ -49,12 +49,23 @@ fn main() {
     let mut cpu_clock_hz: u32 = 1_789_773;
     let mut target_fps: u32 = 60;
 
-    // collect args and filter out known flags
+    // collect args
     let args: Vec<String> = env::args().collect();
     let mut rom_path: Option<String> = None;
+    let mut pal_path: Option<String> = None;
 
-    for arg in &args[1..] {
-        match arg.as_str() {
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--palette" => {
+                if i + 1 < args.len() {
+                    pal_path = Some(args[i + 1].clone());
+                    i += 1;
+                } else {
+                    panic!("Error: --pal requires a palette file path");
+                }
+            }
+
             "--pal" => {
                 cpu_clock_hz = 1_662_607;
                 target_fps = 50;
@@ -64,6 +75,7 @@ fn main() {
                     target_fps
                 );
             }
+
             "--ntsc" => {
                 println!(
                     "[MAIN] Using NTSC timing ({:.6} MHz, {} FPS)", 
@@ -71,18 +83,21 @@ fn main() {
                     target_fps
                 );
             }
+
             "--help" => {
                 println!(
-                    "Arguments:\n  --pal        Use PAL timing for the CPU\n  --ntsc       Use NTSC timing for the CPU\n"
+                    "Arguments:\n  --pal <path>  Use PAL timing and load palette from <path>\n  --ntsc       Use NTSC timing for the CPU\n  --help       Show this help message\n"
                 );
                 std::process::exit(0);
             }
+
             _ => {
                 if rom_path.is_none() {
-                    rom_path = Some(arg.clone());
+                    rom_path = Some(args[i].clone());
                 }
             }
         }
+        i += 1;
     }
 
     // if no ROM path was provided, open file dialog
@@ -95,6 +110,14 @@ fn main() {
             .unwrap()
             .to_string()
     });
+
+    // load palette
+    let pal_path = pal_path.unwrap_or_else(|| "default.pal".to_string());
+
+    if let Err(e) = render::palette::set_palette(&pal_path) {
+        eprintln!("[MAIN] failed to set palette from '{}': {}", pal_path, e);
+        return Err(e);
+    }
 
     // initialize SDL3
     let sdl_context = sdl3::init().unwrap();
@@ -124,11 +147,25 @@ fn main() {
     let rom = Rom::new(&rom_bytes).expect("[MAIN] failed to initialize ROM");
     let mut frame = Frame::new(WIDTH as usize, HEIGHT as usize);
 
+    // setup fps counter
+    let mut fps_counter = 0;
+    let mut last_fps_update = Instant::now();
+
     let bus = Bus::new(rom, move |ppu: &PPU, _apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8| {
+        fps_counter += 1;
+
         render::render(ppu, &mut frame);
         texture.update(None, &frame.data, WIDTH as usize * 3).unwrap();
+        
         canvas.copy(&texture, None, None).unwrap();
         canvas.present();
+
+        let now: Instant = Instant::now();
+        if now.duration_since(last_fps_update) >= Duration::from_secs(1) {
+            canvas.window_mut().set_title(&format!("pNES - FPS: {}", fps_counter)).unwrap();
+            fps_counter = 0;
+            last_fps_update = now;
+        }
 
         for event in event_pump.poll_iter() {
             match event {
