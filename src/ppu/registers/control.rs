@@ -2,20 +2,20 @@ use bitflags::bitflags;
 
 bitflags! {
     pub struct ControlRegister: u8 {
-        const NameTable1                = 0b00000001;
-        const NameTable2                = 0b00000010;
-        const VRAMAddIncrement          = 0b00000100;
-        const SpritePatternAddress      = 0b00001000;
-        const BackgroundPatternAddress  = 0b00010000;
-        const SpriteSize                = 0b00100000;
-        const MasterSlaveSelect         = 0b01000000;
-        const GenerateNMI               = 0b10000000;
+        const Nametable1               = 0b00000001;
+        const Nametable2               = 0b00000010;
+        const VRAMAddressIncrement     = 0b00000100;
+        const SpritePatternAddress     = 0b00001000;
+        const BackgroundPatternAddress = 0b00010000;
+        const SpriteSize               = 0b00100000;
+        const MasterSlaveSelect        = 0b01000000;
+        const GenerateNMI              = 0b10000000;
     }
 }
 
 impl ControlRegister {
-    pub fn new() -> ControlRegister {
-        ControlRegister::from_bits_truncate(0b00000000)
+    pub fn new() -> Self {
+        ControlRegister::from_bits_truncate(0b0000_0000)
     }
 
     pub fn nametable_address(&self) -> u16 {
@@ -24,12 +24,12 @@ impl ControlRegister {
             1 => 0x2400,
             2 => 0x2800,
             3 => 0x2c00,
-            _ => panic!("[PPU] impossible nametable"),
+            _ => panic!("not possible"),
         }
     }
 
     pub fn vram_address_increment(&self) -> u8 {
-        if !self.contains(ControlRegister::VRAMAddIncrement) {
+        if !self.contains(ControlRegister::VRAMAddressIncrement) {
             1
         } else {
             32
@@ -60,10 +60,10 @@ impl ControlRegister {
         }
     }
 
+    // UNUSED PPU FEATURE
     #[allow(dead_code)]
-    // this is an unused feature on the NES.
     pub fn master_slave_select(&self) -> u8 {
-        if !self.contains(ControlRegister::MasterSlaveSelect) {
+        if !self.contains(ControlRegister::SpriteSize) {
             0
         } else {
             1
@@ -71,7 +71,7 @@ impl ControlRegister {
     }
 
     pub fn generate_vblank_nmi(&self) -> bool {
-        self.contains(ControlRegister::GenerateNMI)
+        return self.contains(ControlRegister::GenerateNMI);
     }
 
     pub fn update(&mut self, data: u8) {

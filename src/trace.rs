@@ -15,10 +15,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ADC {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -41,10 +39,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ADC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -67,10 +63,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ADC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -92,11 +86,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ADC {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("ADC {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -112,17 +104,15 @@ impl<'a> CPU<'a> {
             0x7d => { // ADC ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ADC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ADC {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -138,17 +128,15 @@ impl<'a> CPU<'a> {
             0x79 => { // ADC ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ADC {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ADC {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -171,10 +159,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ADC {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -197,10 +183,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ADC {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ADC {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -223,10 +207,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ANC {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -249,10 +231,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ANC {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -275,10 +255,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("AND {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -301,10 +279,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("AND {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -327,10 +303,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("AND {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -352,11 +326,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("AND {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("AND {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -372,17 +344,15 @@ impl<'a> CPU<'a> {
             0x3d => { // AND ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("AND {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("AND {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -398,17 +368,15 @@ impl<'a> CPU<'a> {
             0x39 => { // AND ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("AND {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("AND {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -431,10 +399,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("AND {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -457,10 +423,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("AND {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("AND {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -483,10 +447,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ASL {}", "A ");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -509,10 +471,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ASL {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -535,10 +495,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ASL {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -560,11 +518,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ASL {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("ASL {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -580,17 +536,15 @@ impl<'a> CPU<'a> {
             0x1e => { // ASL ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ASL {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ASL {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -613,10 +567,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BCC {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -639,10 +591,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BCS {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -665,10 +615,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BEQ {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -691,10 +639,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BMI {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -717,10 +663,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BNE {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -743,10 +687,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BPL {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -769,10 +711,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BVC {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -795,10 +735,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BVS {}", format!("${:04X}", (self.pc as usize + 2).wrapping_add((address as i8) as usize)));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -821,10 +759,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BIT {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -846,11 +782,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("BIT {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("BIT {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -873,10 +807,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("BRK {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -899,10 +831,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CLC {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -925,10 +855,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CLD {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -951,10 +879,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CLI {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -977,10 +903,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CLV {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1003,10 +927,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1029,10 +951,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("PHA {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1055,10 +975,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("PLA {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1081,10 +999,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("PHP {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1107,10 +1023,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("PLP {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1133,10 +1047,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("RTI {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1159,10 +1071,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("RTS {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1185,10 +1095,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SEC {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1211,10 +1119,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SED {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1237,10 +1143,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SEI {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1263,10 +1167,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("TAX {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1289,10 +1191,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("TXA {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1315,10 +1215,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("TAY {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1341,10 +1239,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("TYA {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1367,10 +1263,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("TSX {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1393,10 +1287,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("TXS {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1419,10 +1311,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CMP {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1445,10 +1335,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CMP {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1471,10 +1359,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CMP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1496,11 +1382,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("CMP {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("CMP {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1516,17 +1400,15 @@ impl<'a> CPU<'a> {
             0xdd => { // CMP ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("CMP {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("CMP {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1542,17 +1424,15 @@ impl<'a> CPU<'a> {
             0xd9 => { // CMP ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("CMP {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("CMP {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1575,10 +1455,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CMP {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1601,10 +1479,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("CMP {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("CMP {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1627,10 +1503,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CPX {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1653,10 +1527,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CPX {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1678,11 +1550,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("CPX {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("CPX {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1705,10 +1575,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CPY {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1731,10 +1599,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("CPY {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1756,11 +1622,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("CPY {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("CPY {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1783,10 +1647,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("DEC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1809,10 +1671,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("DEC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1834,11 +1694,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("DEC {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("DEC {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1854,17 +1712,15 @@ impl<'a> CPU<'a> {
             0xde => { // DEC ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("DEC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("DEC {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1887,10 +1743,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("DEX {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1913,10 +1767,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("DEY {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1939,10 +1791,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("INX {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1965,10 +1815,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("INY {}", "");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -1991,10 +1839,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("EOR {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2017,10 +1863,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("EOR {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2043,10 +1887,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("EOR {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2068,11 +1910,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("EOR {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("EOR {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2088,17 +1928,15 @@ impl<'a> CPU<'a> {
             0x5d => { // EOR ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("EOR {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("EOR {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2114,17 +1952,15 @@ impl<'a> CPU<'a> {
             0x59 => { // EOR ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("EOR {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("EOR {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2147,10 +1983,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("EOR {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2173,10 +2007,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("EOR {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("EOR {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2199,10 +2031,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("INC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2225,10 +2055,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("INC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2250,11 +2078,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("INC {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("INC {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2270,17 +2096,15 @@ impl<'a> CPU<'a> {
             0xfe => { // INC ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("INC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("INC {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2303,10 +2127,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("JMP {}", format!("${:04X}", mem_addr));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2322,23 +2144,15 @@ impl<'a> CPU<'a> {
             0x6c => { // JMP IND
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Indirect);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                let jmp_addr = if address & 0x00FF == 0x00FF {
-                    let lo = self.mem_read(address2);
-                    let hi = self.mem_read(address2 & 0xFF00);
-                    (hi as u16) << 8 | (lo as u16)
-                } else {
-                    self.mem_read_u16(address2)
-                };
-                let instruction: String = format!("JMP {}", format!("(${:04x}) = {:04x}", address, jmp_addr));
-                
+
+                let instruction: String = format!("JMP {}", format!("(${:04X}) = {:04X}", self.mem_read_u16(self.pc.wrapping_add(1)), mem_addr));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2361,10 +2175,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("JSR {}", format!("${:04X}", mem_addr));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2387,10 +2199,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDA {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2413,10 +2223,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDA {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2439,10 +2247,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDA {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2464,11 +2270,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LDA {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LDA {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2484,17 +2288,15 @@ impl<'a> CPU<'a> {
             0xbd => { // LDA ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LDA {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("LDA {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2510,17 +2312,15 @@ impl<'a> CPU<'a> {
             0xb9 => { // LDA ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LDA {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("LDA {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2543,10 +2343,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDA {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2569,10 +2367,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LDA {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("LDA {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2595,10 +2391,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDX {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2621,10 +2415,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDX {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2647,10 +2439,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDX {}", format!("${:02X},Y @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2672,11 +2462,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LDX {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LDX {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2692,17 +2480,15 @@ impl<'a> CPU<'a> {
             0xbe => { // LDX ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LDX {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("LDX {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2725,10 +2511,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDY {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2751,10 +2535,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDY {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2777,10 +2559,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LDY {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2802,11 +2582,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LDY {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LDY {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2822,17 +2600,15 @@ impl<'a> CPU<'a> {
             0xbc => { // LDY ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LDY {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("LDY {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2855,10 +2631,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LSR {}", "A ");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2881,10 +2655,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LSR {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2907,10 +2679,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("LSR {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2932,11 +2702,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LSR {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LSR {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2952,17 +2720,15 @@ impl<'a> CPU<'a> {
             0x5e => { // LSR ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("LSR {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("LSR {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -2985,10 +2751,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ORA {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3011,10 +2775,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ORA {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3037,10 +2799,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ORA {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3062,11 +2822,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ORA {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("ORA {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3082,17 +2840,15 @@ impl<'a> CPU<'a> {
             0x1d => { // ORA ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ORA {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ORA {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3108,17 +2864,15 @@ impl<'a> CPU<'a> {
             0x19 => { // ORA ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ORA {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ORA {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3141,10 +2895,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ORA {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3167,10 +2919,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ORA {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ORA {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3193,10 +2943,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ROL {}", "A ");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3219,10 +2967,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ROL {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3245,10 +2991,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ROL {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3270,11 +3014,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ROL {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("ROL {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3290,17 +3032,15 @@ impl<'a> CPU<'a> {
             0x3e => { // ROL ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ROL {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ROL {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3323,10 +3063,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ROR {}", "A ");
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3349,10 +3087,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ROR {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3375,10 +3111,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("ROR {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3400,11 +3134,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ROR {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("ROR {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3420,17 +3152,15 @@ impl<'a> CPU<'a> {
             0x7e => { // ROR ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ROR {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ROR {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3453,10 +3183,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SBC {}", format!("#${:02X}", address));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3479,10 +3207,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SBC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3505,10 +3231,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SBC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3530,11 +3254,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SBC {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("SBC {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3550,17 +3272,15 @@ impl<'a> CPU<'a> {
             0xfd => { // SBC ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SBC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SBC {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3576,17 +3296,15 @@ impl<'a> CPU<'a> {
             0xf9 => { // SBC ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SBC {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SBC {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3609,10 +3327,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SBC {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3635,10 +3351,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SBC {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SBC {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3661,10 +3375,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("STA {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3687,10 +3399,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("STA {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3712,11 +3422,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("STA {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("STA {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3732,17 +3440,15 @@ impl<'a> CPU<'a> {
             0x9d => { // STA ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("STA {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("STA {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3758,17 +3464,15 @@ impl<'a> CPU<'a> {
             0x99 => { // STA ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("STA {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("STA {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3791,10 +3495,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("STA {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3817,10 +3519,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("STA {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("STA {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3843,10 +3543,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("STX {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3869,10 +3567,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("STX {}", format!("${:02X},Y @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3894,11 +3590,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("STX {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("STX {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3921,10 +3615,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("STY {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3947,10 +3639,8 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("STY {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3972,11 +3662,9 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("STY {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("STY {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
                     "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
@@ -3999,12 +3687,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4025,12 +3711,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4051,12 +3735,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4077,12 +3759,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4103,12 +3783,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4129,12 +3807,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4155,12 +3831,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4181,12 +3855,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4207,12 +3879,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4232,13 +3902,11 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("NOP {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("NOP {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4252,19 +3920,17 @@ impl<'a> CPU<'a> {
             0x1c => { // NOP ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4278,19 +3944,17 @@ impl<'a> CPU<'a> {
             0x3c => { // NOP ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4304,19 +3968,17 @@ impl<'a> CPU<'a> {
             0x5c => { // NOP ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4330,19 +3992,17 @@ impl<'a> CPU<'a> {
             0x7c => { // NOP ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4356,19 +4016,17 @@ impl<'a> CPU<'a> {
             0xdc => { // NOP ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4382,19 +4040,17 @@ impl<'a> CPU<'a> {
             0xfc => { // NOP ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("NOP {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4415,12 +4071,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4441,12 +4095,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4467,12 +4119,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4493,12 +4143,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4519,12 +4167,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4545,12 +4191,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("NOP {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4571,12 +4215,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4597,12 +4239,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4623,12 +4263,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4649,12 +4287,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4675,12 +4311,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4701,12 +4335,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4727,12 +4359,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4753,12 +4383,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4779,12 +4407,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4805,12 +4431,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4831,12 +4455,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4857,12 +4479,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("HLT {}", "");
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4873,7 +4493,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x80 => { // SKB IMM
+            0x80 => { // NOP IMM
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4883,12 +4503,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SKB {}", format!("#${:02X}", address));
-                
+
+                let instruction: String = format!("NOP {}", format!("#${:02X}", address));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4899,7 +4517,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x82 => { // SKB IMM
+            0x82 => { // NOP IMM
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4909,12 +4527,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SKB {}", format!("#${:02X}", address));
-                
+
+                let instruction: String = format!("NOP {}", format!("#${:02X}", address));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4925,7 +4541,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0x89 => { // SKB IMM
+            0x89 => { // NOP IMM
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4935,12 +4551,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SKB {}", format!("#${:02X}", address));
-                
+
+                let instruction: String = format!("NOP {}", format!("#${:02X}", address));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4951,7 +4565,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xc2 => { // SKB IMM
+            0xc2 => { // NOP IMM
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4961,12 +4575,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SKB {}", format!("#${:02X}", address));
-                
+
+                let instruction: String = format!("NOP {}", format!("#${:02X}", address));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -4977,7 +4589,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xe2 => { // SKB IMM
+            0xe2 => { // NOP IMM
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -4987,12 +4599,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SKB {}", format!("#${:02X}", address));
-                
+
+                let instruction: String = format!("NOP {}", format!("#${:02X}", address));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5013,12 +4623,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SLO {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5039,12 +4647,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SLO {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5064,13 +4670,11 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SLO {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("SLO {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5084,19 +4688,17 @@ impl<'a> CPU<'a> {
             0x1f => { // SLO ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SLO {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SLO {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5110,19 +4712,17 @@ impl<'a> CPU<'a> {
             0x1b => { // SLO ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SLO {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SLO {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5143,12 +4743,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SLO {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5169,12 +4767,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SLO {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SLO {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5185,7 +4781,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xe7 => { // ISC ZP
+            0xe7 => { // ISB ZP
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -5195,12 +4791,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ISC {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ISB {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5211,7 +4805,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xf7 => { // ISC ZPX
+            0xf7 => { // ISB ZPX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -5221,12 +4815,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ISC {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ISB {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5237,7 +4829,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xef => { // ISC ABS
+            0xef => { // ISB ABS
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
                 let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -5246,13 +4838,11 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ISC {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("ISB {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5263,22 +4853,20 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xff => { // ISC ABSX
+            0xff => { // ISB ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ISC {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ISB {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5289,22 +4877,20 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xfb => { // ISC ABSY
+            0xfb => { // ISB ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ISC {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ISB {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5315,7 +4901,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xe3 => { // ISC INDX
+            0xe3 => { // ISB INDX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -5325,12 +4911,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ISC {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ISB {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5341,7 +4925,7 @@ impl<'a> CPU<'a> {
                     self.registers.s,
                 )
             }
-            0xf3 => { // ISC INDY
+            0xf3 => { // ISB INDY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
 
                 let address: u8 = self.mem_read(self.pc.wrapping_add(1));
@@ -5351,12 +4935,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("ISC {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("ISB {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5377,12 +4959,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SRE {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5403,12 +4983,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SRE {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5428,13 +5006,11 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SRE {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("SRE {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5448,19 +5024,17 @@ impl<'a> CPU<'a> {
             0x5f => { // SRE ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SRE {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SRE {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5474,19 +5048,17 @@ impl<'a> CPU<'a> {
             0x5b => { // SRE ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SRE {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SRE {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5507,12 +5079,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("SRE {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5533,12 +5103,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("SRE {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("SRE {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5559,12 +5127,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("RRA {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5585,12 +5151,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("RRA {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5610,13 +5174,11 @@ impl<'a> CPU<'a> {
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_sub(1);
                 
-                let _stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("RRA {}", format!("${:04X}", mem_addr));
-                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("RRA {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5630,19 +5192,17 @@ impl<'a> CPU<'a> {
             0x7f => { // RRA ABSX
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("RRA {}", format!("${:04X},X @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("RRA {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5656,19 +5216,17 @@ impl<'a> CPU<'a> {
             0x7b => { // RRA ABSY
                 let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
 
-                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
                 
                 self.pc = self.pc.wrapping_add(1);
                 let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("RRA {}", format!("${:04X},Y @ {:04X} = {:02X}", address, mem_addr, stored_value));
-                
+
+                let instruction: String = format!("RRA {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5689,12 +5247,10 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
+
                 let instruction: String = format!("RRA {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
-                
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 
@@ -5715,12 +5271,610 @@ impl<'a> CPU<'a> {
                 self.pc = self.pc.wrapping_sub(1);
                 
                 let stored_value: u8 = self.mem_read(mem_addr);
-                let _address2: u16 = self.mem_read_u16(self.pc.wrapping_add(1));
-                
-                let instruction: String = format!("RRA {}", format!("(${:02X},Y) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.y)), mem_addr, stored_value));
-                
+
+                let instruction: String = format!("RRA {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
                 format!(
-                    "{:04X}  {:<9} {:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xa7 => { // LAX ZP
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LAX {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xb7 => { // LAX ZPY
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPageY);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LAX {}", format!("${:02X},Y @ {:02X} = {:02X}", address, mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xaf => { // LAX ABS
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LAX {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xbf => { // LAX ABSY
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LAX {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xa3 => { // LAX INDX
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::IndirectX);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LAX {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xb3 => { // LAX INDY
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::IndirectY);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("LAX {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x87 => { // SAX ZP
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("SAX {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x97 => { // SAX ZPY
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPageY);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("SAX {}", format!("${:02X},Y @ {:02X} = {:02X}", address, mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x8f => { // SAX ABS
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("SAX {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x83 => { // SAX INDX
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::IndirectX);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("SAX {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xeb => { // SBC IMM
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::Immediate);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let _stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("SBC {}", format!("#${:02X}", address));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xc7 => { // DCP ZP
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("DCP {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xd7 => { // DCP ZPX
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPageX);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("DCP {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xcf => { // DCP ABS
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("DCP {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xdf => { // DCP ABSX
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("DCP {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xdb => { // DCP ABSY
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("DCP {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xd3 => { // DCP INDY
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::IndirectY);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("DCP {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0xc3 => { // DCP INDX
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::IndirectX);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("DCP {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x27 => { // RLA ZP
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPage);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("RLA {}", format!("${:02X} = {:02X}", mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x37 => { // RLA ZPX
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::ZeroPageX);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("RLA {}", format!("${:02X},X @ {:02X} = {:02X}", address, mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x2f => { // RLA ABS
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::Absolute);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("RLA {}", format!("${:04X} = {:02X}", mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x3f => { // RLA ABSX
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteX);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("RLA {}", format!("${:04X},X @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.x as u16)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x3b => { // RLA ABSY
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1)), self.mem_read(self.pc.wrapping_add(2))];
+
+                let _address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::AbsoluteY);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("RLA {}", format!("${:04X},Y @ {:04X} = {:02X}", (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x33 => { // RLA INDY
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::IndirectY);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("RLA {}", format!("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", address, (mem_addr.wrapping_sub(self.registers.y as u16)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
+                    self.pc,
+                    byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
+                    instruction, 
+                    self.registers.a, 
+                    self.registers.x, 
+                    self.registers.y,
+                    self.status,
+                    self.registers.s,
+                )
+            }
+            0x23 => { // RLA INDX
+                let byte_values: Vec<u8> = vec![self.mem_read(self.pc.wrapping_add(0)), self.mem_read(self.pc.wrapping_add(1))];
+
+                let address: u8 = self.mem_read(self.pc.wrapping_add(1));
+                
+                self.pc = self.pc.wrapping_add(1);
+                let mem_addr: u16 = self.get_operand_address(&AddressingMode::IndirectX);
+                self.pc = self.pc.wrapping_sub(1);
+                
+                let stored_value: u8 = self.mem_read(mem_addr);
+
+                let instruction: String = format!("RLA {}", format!("(${:02X},X) @ {:02X} = {:04X} = {:02X}", address, (address.wrapping_add(self.registers.x)), mem_addr, stored_value));
+                format!(
+                    "{:04X}  {:<9}*{:<31} A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", 
                     self.pc,
                     byte_values.iter().map(|&b| format!("{:02X} ", b)).collect::<String>(), 
                     instruction, 

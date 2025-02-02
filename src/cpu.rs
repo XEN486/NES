@@ -16,7 +16,7 @@ bitflags! {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum AddressingMode {
     Immediate,
     ZeroPage,
@@ -169,6 +169,7 @@ impl<'a> CPU<'a> {
                     let hi = self.mem_read(mem_address & 0xFF00);
                     return (hi as u16) << 8 | (lo as u16)
                 }
+
                 self.mem_read_u16(mem_address)
             }
 
@@ -213,12 +214,11 @@ impl<'a> CPU<'a> {
         self.stack_push_u16(self.pc);
         let mut flag = self.status.clone();
 
-        if interrupt.mask & 0b0001_0000 != 0 {
-            flag |= StatusFlags::Break2.bits();
+        if interrupt.mask & 0b010000 == 1 {
+            flag |= StatusFlags::Break.bits();
         }
-
-        if interrupt.mask & 0b0010_0000 != 0 {
-            flag &= !StatusFlags::Break.bits();
+        if interrupt.mask & 0b100000 == 1 {
+            flag |= StatusFlags::Break2.bits();
         }
 
         self.stack_push(flag);
@@ -228,7 +228,7 @@ impl<'a> CPU<'a> {
         self.pc = self.mem_read_u16(interrupt.vector);
     }
     
-    pub fn step_with_callback<F>(&mut self, mut callback: F) -> u8 where F: FnMut(&mut CPU) {
+    pub fn step_with_callback<F>(&mut self, mut callback: F) -> (u8, u8) where F: FnMut(&mut CPU) {
         callback(self);
 
         if let Some(_nmi) = self.bus.poll_nmi_status() {
@@ -244,10 +244,10 @@ impl<'a> CPU<'a> {
         }
         
         self.bus.tick(cycles);
-        cycles
+        (cycles, opcode)
     }
 
-    pub fn step(&mut self) -> u8 {
+    pub fn step(&mut self) -> (u8, u8) {
         self.step_with_callback(|_| {})
     }
 

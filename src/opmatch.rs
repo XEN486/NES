@@ -1125,32 +1125,32 @@ impl<'a> CPU<'a> {
                 result
             }
 
-            0x80 => { // SKB IMM
-                let result: bool = self.skb(&AddressingMode::Immediate);
+            0x80 => { // NOP IMM
+                let result: bool = self.nop(&AddressingMode::Immediate);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
 
-            0x82 => { // SKB IMM
-                let result: bool = self.skb(&AddressingMode::Immediate);
+            0x82 => { // NOP IMM
+                let result: bool = self.nop(&AddressingMode::Immediate);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
 
-            0x89 => { // SKB IMM
-                let result: bool = self.skb(&AddressingMode::Immediate);
+            0x89 => { // NOP IMM
+                let result: bool = self.nop(&AddressingMode::Immediate);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
 
-            0xc2 => { // SKB IMM
-                let result: bool = self.skb(&AddressingMode::Immediate);
+            0xc2 => { // NOP IMM
+                let result: bool = self.nop(&AddressingMode::Immediate);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
 
-            0xe2 => { // SKB IMM
-                let result: bool = self.skb(&AddressingMode::Immediate);
+            0xe2 => { // NOP IMM
+                let result: bool = self.nop(&AddressingMode::Immediate);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
@@ -1197,44 +1197,44 @@ impl<'a> CPU<'a> {
                 result
             }
 
-            0xe7 => { // ISC ZP
-                let result: bool = self.isc(&AddressingMode::ZeroPage);
+            0xe7 => { // ISB ZP
+                let result: bool = self.isb(&AddressingMode::ZeroPage);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
 
-            0xf7 => { // ISC ZPX
-                let result: bool = self.isc(&AddressingMode::ZeroPageX);
+            0xf7 => { // ISB ZPX
+                let result: bool = self.isb(&AddressingMode::ZeroPageX);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
 
-            0xef => { // ISC ABS
-                let result: bool = self.isc(&AddressingMode::Absolute);
+            0xef => { // ISB ABS
+                let result: bool = self.isb(&AddressingMode::Absolute);
                 self.pc = self.pc.wrapping_add(2);
                 result
             }
 
-            0xff => { // ISC ABSX
-                let result: bool = self.isc(&AddressingMode::AbsoluteX);
+            0xff => { // ISB ABSX
+                let result: bool = self.isb(&AddressingMode::AbsoluteX);
                 self.pc = self.pc.wrapping_add(2);
                 result
             }
 
-            0xfb => { // ISC ABSY
-                let result: bool = self.isc(&AddressingMode::AbsoluteY);
+            0xfb => { // ISB ABSY
+                let result: bool = self.isb(&AddressingMode::AbsoluteY);
                 self.pc = self.pc.wrapping_add(2);
                 result
             }
 
-            0xe3 => { // ISC INDX
-                let result: bool = self.isc(&AddressingMode::IndirectX);
+            0xe3 => { // ISB INDX
+                let result: bool = self.isb(&AddressingMode::IndirectX);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
 
-            0xf3 => { // ISC INDY
-                let result: bool = self.isc(&AddressingMode::IndirectY);
+            0xf3 => { // ISB INDY
+                let result: bool = self.isb(&AddressingMode::IndirectY);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }
@@ -1319,6 +1319,156 @@ impl<'a> CPU<'a> {
 
             0x73 => { // RRA INDY
                 let result: bool = self.rra(&AddressingMode::IndirectY);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xa7 => { // LAX ZP
+                let result: bool = self.lax(&AddressingMode::ZeroPage);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xb7 => { // LAX ZPY
+                let result: bool = self.lax(&AddressingMode::ZeroPageY);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xaf => { // LAX ABS
+                let result: bool = self.lax(&AddressingMode::Absolute);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0xbf => { // LAX ABSY
+                let result: bool = self.lax(&AddressingMode::AbsoluteY);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0xa3 => { // LAX INDX
+                let result: bool = self.lax(&AddressingMode::IndirectX);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xb3 => { // LAX INDY
+                let result: bool = self.lax(&AddressingMode::IndirectY);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0x87 => { // SAX ZP
+                let result: bool = self.sax(&AddressingMode::ZeroPage);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0x97 => { // SAX ZPY
+                let result: bool = self.sax(&AddressingMode::ZeroPageY);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0x8f => { // SAX ABS
+                let result: bool = self.sax(&AddressingMode::Absolute);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0x83 => { // SAX INDX
+                let result: bool = self.sax(&AddressingMode::IndirectX);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xeb => { // SBC IMM
+                let result: bool = self.sbc(&AddressingMode::Immediate);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xc7 => { // DCP ZP
+                let result: bool = self.dcp(&AddressingMode::ZeroPage);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xd7 => { // DCP ZPX
+                let result: bool = self.dcp(&AddressingMode::ZeroPageX);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xcf => { // DCP ABS
+                let result: bool = self.dcp(&AddressingMode::Absolute);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0xdf => { // DCP ABSX
+                let result: bool = self.dcp(&AddressingMode::AbsoluteX);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0xdb => { // DCP ABSY
+                let result: bool = self.dcp(&AddressingMode::AbsoluteY);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0xd3 => { // DCP INDY
+                let result: bool = self.dcp(&AddressingMode::IndirectY);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0xc3 => { // DCP INDX
+                let result: bool = self.dcp(&AddressingMode::IndirectX);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0x27 => { // RLA ZP
+                let result: bool = self.rla(&AddressingMode::ZeroPage);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0x37 => { // RLA ZPX
+                let result: bool = self.rla(&AddressingMode::ZeroPageX);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0x2f => { // RLA ABS
+                let result: bool = self.rla(&AddressingMode::Absolute);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0x3f => { // RLA ABSX
+                let result: bool = self.rla(&AddressingMode::AbsoluteX);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0x3b => { // RLA ABSY
+                let result: bool = self.rla(&AddressingMode::AbsoluteY);
+                self.pc = self.pc.wrapping_add(2);
+                result
+            }
+
+            0x33 => { // RLA INDY
+                let result: bool = self.rla(&AddressingMode::IndirectY);
+                self.pc = self.pc.wrapping_add(1);
+                result
+            }
+
+            0x23 => { // RLA INDX
+                let result: bool = self.rla(&AddressingMode::IndirectX);
                 self.pc = self.pc.wrapping_add(1);
                 result
             }

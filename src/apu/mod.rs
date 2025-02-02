@@ -12,11 +12,8 @@ use channels::{pulse::PulseChannel, triangle::TriangleChannel, noise::NoiseChann
 use filter::FirstOrderFilter;
 use sweep::SweepNegationMode;
 
-use std::sync::Arc;
-use std::sync::Mutex;
-
 pub struct APU {
-    pub buffer: Arc<Mutex<Vec<f32>>>,
+    pub buffer: Vec<i16>,
     frame_counter: FrameCounter,
     pulse_0: PulseChannel,
     pulse_1: PulseChannel,
@@ -29,7 +26,7 @@ pub struct APU {
 impl APU {
     pub fn new(prg_rom: Vec<u8>) -> APU {
         APU {
-            buffer: Arc::new(Mutex::new(Vec::new())),
+            buffer: Vec::new(),
             frame_counter: FrameCounter::new(),
 
             pulse_0: PulseChannel::new(SweepNegationMode::OnesCompliment),
@@ -152,31 +149,26 @@ impl APU {
 
         if cycles % 40 == 0 {
             let s = self.sample();
-            self.buffer.lock().expect("Failed to get buffer").push(s);
+            self.buffer.push(s);
         }
     }
 
-    fn sample(&mut self) -> f32 {
-        // sample each channel
+    fn sample(&mut self) -> i16 {
         let p0 = self.pulse_0.sample() as f64;
         let p1 = self.pulse_1.sample() as f64;
         let t = self.triangle.sample() as f64;
         let n = self.noise.sample() as f64;
         let d = self.dmc.sample() as f64;
-    
-        // combine
+
         let pulse_out = 95.88 / ((8218.0 / (p0 + p1)) + 100.0);
         let tnd_out = 159.79 / ((1.0 / (t / 8227.0 + n / 12241.0 + d / 22638.0)) + 100.0);
-    
-        // combine pulse and tnd outputs
-        let mut output = pulse_out + tnd_out;
-    
-        // apply filters
-        for i in 0..self.filters.len() {
+
+        let mut output = (pulse_out + tnd_out) * 65535.0;
+
+        for i in 0..3 {
             output = self.filters[i].tick(output);
         }
-    
-        // return the normalized output as f32
-        output as f32
+
+        output as i16
     }
 }

@@ -24,6 +24,6 @@ impl Mapper for Mapper0 {
     }
 
     fn write_prg_rom(&mut self, addr: u16, _data: u8) {
-        println!("[MAPPER 0] Write to PRG ROM attempted at address 0x{:04x}", addr);
+        println!("[MAPPER 0] write to PRG ROM attempted at address 0x{:04x}", addr);
     }
 }

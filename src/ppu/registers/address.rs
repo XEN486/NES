@@ -6,7 +6,7 @@ pub struct AddressRegister {
 impl AddressRegister {
     pub fn new() -> Self {
         AddressRegister {
-            value: (0, 0), // high byte first, lo byte second
+            value: (0, 0),
             hi_ptr: true,
         }
     }
@@ -24,7 +24,7 @@ impl AddressRegister {
         }
 
         if self.get() > 0x3fff {
-            //mirror down addr above 0x3fff
+            // mirror down addresses above 0x3fff
             self.set(self.get() & 0b11111111111111);
         }
 
@@ -38,7 +38,7 @@ impl AddressRegister {
             self.value.0 = self.value.0.wrapping_add(1);
         }
         if self.get() > 0x3fff {
-            self.set(self.get() & 0b11111111111111); //mirror down addr above 0x3fff
+            self.set(self.get() & 0b11111111111111); // mirror down addresses above 0x3fff
         }
     }
 

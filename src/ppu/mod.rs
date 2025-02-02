@@ -79,37 +79,26 @@ impl PPU {
         self.increment_vram_addr();
 
         match addr {
-            // CHR ROM
-            0 ..= 0x1FFF => {
+            0..=0x1fff => {
                 let result = self.internal_data_buffer;
                 self.internal_data_buffer = self.chr_rom[addr as usize];
                 result
             }
-
-            // VRAM
-            0x2000 ..= 0x2fff => {
+            0x2000..=0x2fff => {
                 let result = self.internal_data_buffer;
                 self.internal_data_buffer = self.vram[self.mirror_vram_address(addr) as usize];
                 result
             }
+            0x3000..=0x3eff => unimplemented!("[PPU] address {:04x} shouldn't be used in reality", addr),
 
-            // Reserved
-            0x3000 ..= 0x3eff => {
-                println!("[PPU] address space 0x3000 -> 0x3eff shouldn't be used. address requested: 0x{:04x}", addr);
-                0
-            }
-
-            // Palette Table Mirrors
+            // Addresses $3F10/$3F14/$3F18/$3F1C are mirrors of $3F00/$3F04/$3F08/$3F0C
             0x3f10 | 0x3f14 | 0x3f18 | 0x3f1c => {
                 let add_mirror = addr - 0x10;
                 self.palette_table[(add_mirror - 0x3f00) as usize]
             }
-            
-            // Palette Table
-            0x3f00 ..= 0x3fff => self.palette_table[(addr - 0x3f00) as usize % 32],
 
-            // Unknown
-            _ => panic!("[PPU] unexpected access to mirrored space {}", addr),
+            0x3f00..=0x3fff => self.palette_table[(addr - 0x3f00) as usize],
+            _ => unimplemented!("[PPU] unexpected access to mirrored space {}", addr),
         }
     }
 
@@ -129,19 +118,25 @@ impl PPU {
     pub fn write_to_data(&mut self, value: u8) {
         let addr = self.address.get();
         match addr {
-            0x0000 ..= 0x1fff => println!("[PPU] attempted to write to CHR ROM"),
-            0x2000 ..= 0x2fff => self.vram[self.mirror_vram_address(addr) as usize] = value,
-            0x3000 ..= 0x3eff => println!("[PPU] attempted to write to 0x{:04x}!", addr),
+            0x0000 ..= 0x1fff => println!("[PPU] attempted to write to chr rom space {}", addr),
 
+            0x2000 ..= 0x2fff => {
+                self.vram[self.mirror_vram_address(addr) as usize] = value;
+            }
+            0x3000 ..= 0x3eff => unimplemented!("[PPU] address {:04x} shouldn't be used in reality", addr),
+
+            // Addresses $3F10/$3F14/$3F18/$3F1C are mirrors of $3F00/$3F04/$3F08/$3F0C
             0x3f10 | 0x3f14 | 0x3f18 | 0x3f1c => {
                 let add_mirror = addr - 0x10;
                 self.palette_table[(add_mirror - 0x3f00) as usize] = value;
             }
 
-            0x3f00 ..= 0x3fff => self.palette_table[(addr - 0x3f00) as usize % 32] = value,
-            _ => println!("[PPU] unexpected access to mirror space"),
-        }
+            0x3f00..=0x3fff => {
+                self.palette_table[(addr - 0x3f00) as usize] = value;
+            }
 
+            _ => unreachable!("[PPU] unexpected access to mirrored space {}", addr),
+        }
         self.increment_vram_addr();
     }
 

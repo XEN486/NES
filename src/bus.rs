@@ -5,10 +5,6 @@ use crate::ppu::PPU;
 use crate::joypad::Joypad;
 use crate::mapper::{Mapper, Mapper0};
 use rand::Rng;
-
-use std::sync::Arc;
-use std::sync::Mutex;
-
 pub trait Mem {
     fn mem_read(&mut self, addr: u16) -> u8;
     fn mem_write(&mut self, addr: u16, data: u8);
@@ -28,6 +24,7 @@ pub struct Bus<'call> {
     corruption: u8,
 }
 
+#[allow(dead_code)]
 impl<'a> Bus<'a> {
     pub fn new<'call, F>(rom: Rom, gameloop: F) -> Bus<'call> 
     where F: FnMut(&PPU, &mut APU, &mut Joypad, &mut u8) + 'call {
@@ -73,8 +70,16 @@ impl<'a> Bus<'a> {
         self.ppu.nmi_interrupt.take()
     }
 
-    pub fn get_apu_buffer(&self) -> Arc<Mutex<Vec<f32>>> {
+    pub fn get_apu_buffer(&self) -> Vec<i16> {
         self.apu.buffer.clone()
+    }
+
+    pub fn set_apu_buffer(&mut self, buffer: Vec<i16>) {
+        self.apu.buffer = buffer;
+    }
+
+    pub fn pop_apu_buffer(&mut self) -> Option<i16> {
+        self.apu.buffer.pop()
     }
 }
 
@@ -85,23 +90,28 @@ impl Mem for Bus<'_> {
                 let mirror_down_addr = addr & 0b00000111_11111111;
                 self.cpu_vram[mirror_down_addr as usize]
             }
+
             0x2000 | 0x2001 | 0x2003 | 0x2005 | 0x2006 | 0x4014 => {
                 println!("[BUS] attempted to read from write-only PPU registers");
                 0
             }
+
             0x2002 => self.ppu.read_status(),
             0x2004 => self.ppu.read_oam_data(),
             0x2007 => self.ppu.read_data(),
             0x4015 => self.apu.read(),
             0x4016 => self.joypad1.read(),
-            0x4017 => 0, // No support for joypad 2
+            0x4017 => 0, // ignore joypad 2
+
             0x2008..=0x3FFF => {
                 let mirror_down_addr = addr & 0b00100000_00000111;
                 self.mem_read(mirror_down_addr)
             }
+
             0x8000..=0xFFFF => self.read_prg_rom(addr),
+            
             _ => {
-                println!("[BUS] reading from unknown memory @ 0x{:04x}", addr);
+                //println!("[BUS] reading from unknown memory @ 0x{:04x}", addr);
                 0
             }
         }

@@ -11,7 +11,6 @@ mod mapper;
 use bus::Bus;
 use cartridge::Rom;
 use apu::APU;
-use cpal::traits::{HostTrait, DeviceTrait};
 use ppu::PPU;
 use cpu::CPU;
 use render::frame::Frame;
@@ -24,6 +23,9 @@ use rfd::FileDialog;
 
 use std::time::{Duration, Instant};
 use std::env;
+
+use std::fs::File;
+use std::io::Write;
 
 fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
     match keycode {
@@ -53,6 +55,9 @@ fn main() -> Result<(), std::io::Error> {
     let args: Vec<String> = env::args().collect();
     let mut rom_path: Option<String> = None;
     let mut pal_path: Option<String> = None;
+    let mut trace_flag: bool = false;
+    let mut pc_start: Option<String> = None;
+    let mut end_brk: bool = false;
 
     let mut i = 1;
     while i < args.len() {
@@ -64,6 +69,24 @@ fn main() -> Result<(), std::io::Error> {
                 } else {
                     panic!("Error: --palette requires a palette file path");
                 }
+            }
+
+            "--pc" => {
+                if i + 1 < args.len() {
+                    pc_start = Some(args[i + 1].clone());
+                    i += 1;
+                } else {
+                    panic!("Error: --pc requires a hex value");
+                }
+            }
+
+            "--trace" => {
+                println!("[MAIN] Enabled trace mode");
+                trace_flag = true;
+            }
+
+            "--endonbrk" => {
+                end_brk = true;
             }
 
             "--pal" => {
@@ -86,7 +109,7 @@ fn main() -> Result<(), std::io::Error> {
 
             "--help" => {
                 println!(
-                    "Arguments:\n  --palette <path>   Uses the custom palette at <path>\n  --pal              Use PAL timing for the CPU\n  --ntsc             Use NTSC timing for the CPU\n  --help             Show this help message\n"
+                    "Arguments:\n  --palette <path>    Uses the custom palette at <path>\n  --pal               Use PAL timing for the CPU\n  --ntsc              Use NTSC timing for the CPU\n  --pc <start>        Start the CPU with PC set to <start>\n  --trace             Trace the instructions the CPU executes\n  --endonbrk          Ends the emulator on a BRK instruction\n  --help              Show this help message\n"
                 );
                 std::process::exit(0);
             }
@@ -145,7 +168,7 @@ fn main() -> Result<(), std::io::Error> {
     // load the game
     let rom_bytes = std::fs::read(rom_path).expect("[MAIN] failed to read ROM file");
     let rom = Rom::new(&rom_bytes).expect("[MAIN] failed to initialize ROM");
-    let mut frame = Frame::new(WIDTH as usize, HEIGHT as usize);
+    let mut frame = Frame::new();
 
     // setup fps counter
     let mut fps_counter = 0;
@@ -210,43 +233,20 @@ fn main() -> Result<(), std::io::Error> {
         }
     });
 
-    // setup audio
-    let buffer = bus.get_apu_buffer();
-    let host = cpal::default_host();
-    let device = host.default_output_device().expect("[MAIN] no output device available");
-    let config = device.default_output_config().expect("[MAIN] failed to get default config");
-
-    assert_eq!(
-        config.sample_format(),
-        cpal::SampleFormat::F32,
-        "[MAIN] the audio device does not support f32 format"
-    );
-
-    let stream_config = config.into();
-
-    let _stream = device
-        .build_output_stream(
-            &stream_config,
-            move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
-                let mut buffer_lock = buffer.lock().expect("[MAIN] failed to lock buffer");
-                for frame in data.iter_mut() {
-                    *frame = buffer_lock.pop().unwrap_or(0.0);
-                }
-            },
-            move |err| {
-                eprintln!("[MAIN] audio stream error: {}", err);
-            },
-            None,
-        )
-        .expect("[MAIN] failed to build audio stream");
-
     // setup CPU
     let mut cpu = CPU::new(bus);
     cpu.reset();
 
+    if pc_start.is_some() {
+        cpu.pc = u16::from_str_radix(&pc_start.unwrap(), 16).expect("[MAIN] invalid hex string passed to --pc")
+    }
+
     // setup timing
     let target_frame_duration: Duration = Duration::from_secs_f64(1.0 / target_fps as f64);
     let cycles_per_frame: u32 = cpu_clock_hz / 60;
+
+    // create a file if we are tracing the cpu
+    let mut file = File::create("cpu.log")?;
 
     // main loop
     loop {
@@ -254,7 +254,17 @@ fn main() -> Result<(), std::io::Error> {
         let mut cycles_executed = 0;
 
         while cycles_executed < cycles_per_frame {
-            cycles_executed += cpu.step() as u32;
+            if trace_flag {
+                writeln!(file, "{}", cpu.trace())?;
+            }
+
+            let (cycles, opcode) = cpu.step();
+            cycles_executed += cycles as u32;
+
+            // end on break if the endbreak flag is set
+            if opcode == 0x00 && end_brk {
+                return Ok(());
+            }
         }
 
         let elapsed = frame_start.elapsed();

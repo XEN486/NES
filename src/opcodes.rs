@@ -216,6 +216,22 @@ impl<'a> CPU<'a> {
         false
     }
 
+    fn dcp(&mut self, mode: &AddressingMode) -> bool {
+        let addr = self.get_operand_address(mode);
+        let mut data = self.mem_read(addr);
+        
+        data = data.wrapping_sub(1);
+        self.mem_write(addr, data);
+
+        self.set_flag_else_clear(StatusFlags::Carry, data <= self.registers.a);
+
+        let subbed = self.registers.a.wrapping_sub(data);
+        self.set_flag_else_clear(StatusFlags::Zero, subbed == 0);
+        self.set_flag_else_clear(StatusFlags::Negative, (subbed >> 7) == 1);
+
+        false
+    }
+
     fn dec(&mut self, mode: &AddressingMode) -> bool {
         let addr: u16 = self.get_operand_address(mode);
         let value: u8 = self.mem_read(addr);
@@ -289,7 +305,7 @@ impl<'a> CPU<'a> {
         false
     }
 
-    fn isc(&mut self, mode: &AddressingMode) -> bool {
+    fn isb(&mut self, mode: &AddressingMode) -> bool {
         let addr = self.get_operand_address(mode);
         let mut value = self.mem_read(addr);
 
@@ -326,6 +342,12 @@ impl<'a> CPU<'a> {
         self.stack_push_u16(self.pc + 2 - 1);
         self.pc = addr.wrapping_sub(2); // 1 word added on after this function runs
 
+        false
+    }
+
+    fn lax(&mut self, mode: &AddressingMode) -> bool {
+        self.lda(mode);
+        self.tax(mode);
         false
     }
 
@@ -388,7 +410,12 @@ impl<'a> CPU<'a> {
         false
     }
 
-    fn nop(&mut self, _mode: &AddressingMode) -> bool {
+    fn nop(&mut self, mode: &AddressingMode) -> bool {
+        if mode != &AddressingMode::Implied {
+            let addr = self.get_operand_address(mode);
+            let _ = self.mem_read(addr);
+        }
+
         false
     }
 
@@ -430,6 +457,13 @@ impl<'a> CPU<'a> {
         self.status = self.stack_pop();
         self.clear_flag(StatusFlags::Break);
         self.set_flag(StatusFlags::Break2);
+
+        false
+    }
+
+    fn rla(&mut self, mode: &AddressingMode) -> bool {
+        self.rol(mode);
+        self.and(mode);
 
         false
     }
@@ -502,8 +536,8 @@ impl<'a> CPU<'a> {
     }
 
     fn rra(&mut self, mode: &AddressingMode) -> bool {
-        self.ror(&mode);
-        self.adc(&mode);
+        self.ror(mode);
+        self.adc(mode);
 
         false
     }
@@ -521,6 +555,13 @@ impl<'a> CPU<'a> {
     fn rts(&mut self, _mode: &AddressingMode) -> bool {
         self.pc = self.stack_pop_u16() + 1;
 
+        false
+    }
+
+    fn sax(&mut self, mode: &AddressingMode) -> bool {
+        let addr = self.get_operand_address(mode);
+        self.mem_write(addr, self.registers.a & self.registers.x);
+        
         false
     }
 
@@ -557,13 +598,6 @@ impl<'a> CPU<'a> {
     fn sei(&mut self, _mode: &AddressingMode) -> bool {
         self.set_flag(StatusFlags::InterruptDisable);
         
-        false
-    }
-
-    fn skb(&mut self, mode: &AddressingMode) -> bool {
-        let addr = self.get_operand_address(mode);
-        let _ = self.mem_read(addr);
-
         false
     }
 

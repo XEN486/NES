@@ -5,7 +5,7 @@ pub struct ScrollRegister {
 }
 
 impl ScrollRegister {
-    pub fn new() -> ScrollRegister {
+    pub fn new() -> Self {
         ScrollRegister {
             scroll_x: 0,
             scroll_y: 0,
@@ -19,7 +19,6 @@ impl ScrollRegister {
         } else {
             self.scroll_y = data;
         }
-
         self.latch = !self.latch;
     }
 
