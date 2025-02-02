@@ -10,11 +10,9 @@ mod mapper;
 
 use bus::Bus;
 use cartridge::Rom;
-use apu::APU;
-use ppu::PPU;
 use cpu::CPU;
 use render::frame::Frame;
-use joypad::{Joypad, JoypadButton};
+use joypad::JoypadButton;
 
 use sdl3::{event::Event, keyboard::Keycode, pixels::PixelFormat};
 use sdl3::sys::{pixels::SDL_PIXELFORMAT_RGB24, render::SDL_SetTextureScaleMode, surface::SDL_ScaleMode};
@@ -168,22 +166,19 @@ fn main() -> Result<(), std::io::Error> {
     // load the game
     let rom_bytes = std::fs::read(rom_path).expect("[MAIN] failed to read ROM file");
     let rom = Rom::new(&rom_bytes).expect("[MAIN] failed to initialize ROM");
-    let mut frame = Frame::new();
 
     // setup fps counter
     let mut fps_counter = 0;
     let mut last_fps_update = Instant::now();
 
-    let bus = Bus::new(rom, move |ppu: &PPU, _apu: &mut APU, joypad: &mut Joypad, corruption: &mut u8| {
+    let bus = Bus::new(rom, move |frame, _ppu, _apu, joypad, corruption| {
         fps_counter += 1;
-
-        render::render(ppu, &mut frame);
+    
         texture.update(None, &frame.data, WIDTH as usize * 3).unwrap();
-        
         canvas.copy(&texture, None, None).unwrap();
         canvas.present();
-
-        let now: Instant = Instant::now();
+    
+        let now = Instant::now();
         if now.duration_since(last_fps_update) >= Duration::from_secs(1) {
             canvas.window_mut().set_title(&format!("pNES - FPS: {}", fps_counter)).unwrap();
             fps_counter = 0;

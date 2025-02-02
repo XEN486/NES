@@ -1,7 +1,9 @@
 use crate::cartridge::Mirroring;
-use registers::{address::AddressRegister, control::ControlRegister, mask::MaskRegister, scroll::ScrollRegister, status::StatusRegister};
+use crate::render;
+use crate::Frame;
 
 mod registers;
+use registers::{address::AddressRegister, control::ControlRegister, mask::MaskRegister, scroll::ScrollRegister, status::StatusRegister};
 
 pub struct PPU {
     pub chr_rom: Vec<u8>,
@@ -128,11 +130,11 @@ impl PPU {
             // Addresses $3F10/$3F14/$3F18/$3F1C are mirrors of $3F00/$3F04/$3F08/$3F0C
             0x3f10 | 0x3f14 | 0x3f18 | 0x3f1c => {
                 let add_mirror = addr - 0x10;
-                self.palette_table[(add_mirror - 0x3f00) as usize] = value;
+                self.palette_table[(add_mirror - 0x3f00) as usize % 32] = value;
             }
 
             0x3f00..=0x3fff => {
-                self.palette_table[(addr - 0x3f00) as usize] = value;
+                self.palette_table[(addr - 0x3f00) as usize % 32] = value;
             }
 
             _ => unreachable!("[PPU] unexpected access to mirrored space {}", addr),
@@ -172,39 +174,40 @@ impl PPU {
         }
     }
 
-    pub fn tick(&mut self, cycles: u8) -> bool {
+    pub fn tick(&mut self, cycles: u8, frame: &mut Frame) -> bool {
         self.cycles += cycles as usize;
-
-        // wait until 341 cycles pass (341 PPU cycles = 1 scanline)
+    
         if self.cycles >= 341 {
             if self.is_sprite_0_hit(self.cycles) {
                 self.status.set_sprite_zero_hit(true);
             }
-
+    
             self.cycles -= 341;
+    
+            // render after completing each scanline
+            render::render_scanline(self, frame, self.scanline as usize);
+    
             self.scanline += 1;
-
-            // set vblank status on scanline 241
+    
             if self.scanline == 241 {
                 self.status.set_vblank_status(true);
                 self.status.set_sprite_zero_hit(false);
-
+    
                 if self.control.generate_vblank_nmi() {
                     self.nmi_interrupt = Some(1);
                 }
             }
-
-            // reset vblank status on scanline 262 (should this not be 261?)
+    
             if self.scanline >= 262 {
                 self.scanline = 0;
                 self.nmi_interrupt = None;
                 self.status.set_sprite_zero_hit(false);
                 self.status.reset_vblank_status();
-                return true;
+                return true; // trigger VBlank for gameloop
             }
         }
         false
-    }
+    }    
 
     fn is_sprite_0_hit(&self, cycle: usize) -> bool {
         let y = self.oam_data[0] as usize;

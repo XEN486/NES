@@ -4,7 +4,10 @@ use crate::apu::APU;
 use crate::ppu::PPU;
 use crate::joypad::Joypad;
 use crate::mapper::{Mapper, Mapper0};
+use crate::Frame;
+
 use rand::Rng;
+
 pub trait Mem {
     fn mem_read(&mut self, addr: u16) -> u8;
     fn mem_write(&mut self, addr: u16, data: u8);
@@ -18,16 +21,17 @@ pub struct Bus<'call> {
     ppu: PPU,
     apu: APU,
     joypad1: Joypad,
+    frame: Frame,
 
     cycles: usize,
-    gameloop: Box<dyn FnMut(&PPU, &mut APU, &mut Joypad, &mut u8) + 'call>,
+    gameloop: Box<dyn FnMut(&Frame, &PPU, &mut APU, &mut Joypad, &mut u8) + 'call>,
     corruption: u8,
 }
 
 #[allow(dead_code)]
 impl<'a> Bus<'a> {
     pub fn new<'call, F>(rom: Rom, gameloop: F) -> Bus<'call> 
-    where F: FnMut(&PPU, &mut APU, &mut Joypad, &mut u8) + 'call {
+    where F: FnMut(&Frame, &PPU, &mut APU, &mut Joypad, &mut u8) + 'call {
         let ppu = PPU::new(rom.chr_rom.clone(), rom.mirroring);
         let apu = APU::new(rom.prg_rom.clone());
 
@@ -42,6 +46,7 @@ impl<'a> Bus<'a> {
             ppu,
             apu,
             joypad1: Joypad::new(),
+            frame: Frame::new(),
             cycles: 0,
             gameloop: Box::from(gameloop),
             corruption: 0,
@@ -53,16 +58,16 @@ impl<'a> Bus<'a> {
     }
 
     pub fn tick(&mut self, cycles: u8) {
-        self.apu.dmc.reset_stall_cycles(); // reset stall cycles on the DMC
+        self.apu.dmc.reset_stall_cycles();
         for _ in 0..cycles {
             self.cycles += 1;
             self.apu.tick(self.cycles);
         }
-
-        let new_frame: bool = self.ppu.tick(cycles * 3); // 1 PPU cycle = 3 CPU cycles
-
+    
+        let new_frame = self.ppu.tick(cycles * 3, &mut self.frame);
+    
         if new_frame {
-            (self.gameloop)(&self.ppu, &mut self.apu, &mut self.joypad1, &mut self.corruption);
+            (self.gameloop)(&self.frame, &self.ppu, &mut self.apu, &mut self.joypad1, &mut self.corruption);
         }
     }
 

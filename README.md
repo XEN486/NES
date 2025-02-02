@@ -10,14 +10,12 @@ pNES is a small NES emulator written in Rust that I have been working on.
 I'm mostly sure that the APU is generating the correct samples, but playing the audio doesn't seem to work.
 
 Currently, only mapper 0 games are supported. Games that have been tested **working**:
-- Donkey Kong
-- Donkey Kong 3
-- Ice Climber
-- Mario Bros. (original)
-- Pac-Man
-
-Games that have been tested and **don't work well**:
-- Super Mario Bros.
+- [x] Donkey Kong
+- [x] Donkey Kong 3
+- [x] Ice Climber
+- [x] Mario Bros. (original)
+- [x] Pac-Man
+- [x] Super Mario Bros. (has some graphical bugs)
 
 ## How do I use this?
 If you pass no arguments to the emulator, a file dialog will come up asking you to load an iNES rom.
