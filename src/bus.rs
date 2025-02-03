@@ -1,11 +1,13 @@
-// bus.rs
 use crate::cartridge::Rom;
 use crate::apu::APU;
 use crate::ppu::PPU;
 use crate::joypad::Joypad;
-use crate::mapper::{Mapper, Mapper0};
 use crate::Frame;
 
+use crate::mappers::{mapper::Mapper, mapper0::Mapper0};
+
+use std::rc::Rc;
+use std::cell::RefCell;
 use rand::Rng;
 
 pub trait Mem {
@@ -30,13 +32,24 @@ pub struct Bus<'call> {
 
 #[allow(dead_code)]
 impl<'a> Bus<'a> {
-    pub fn new<'call, F>(rom: Rom, gameloop: F) -> Bus<'call> 
-    where F: FnMut(&Frame, &PPU, &mut APU, &mut Joypad, &mut u8) + 'call {
+    pub fn new<'call, F>(rom: Rom, gameloop: F) -> Bus<'call>
+    where
+        F: FnMut(&Frame, &PPU, &mut APU, &mut Joypad, &mut u8) + 'call,
+    {
+        // wrap prg rom in rc/refcell to allow mutable sharing
+        let prg_rom = Rc::new(RefCell::new(rom.prg_rom));
+        // ppu uses chr rom; cloning is fine
         let ppu = PPU::new(rom.chr_rom.clone(), rom.mirroring);
-        let apu = APU::new(rom.prg_rom.clone());
-
+        // pass shared prg rom to apu
+        let apu = APU::new(prg_rom.clone());
+        // create mapper with shared prg rom so writes mutate memory
         let mapper: Box<dyn Mapper> = match rom.mapper {
-            0 => Box::new(Mapper0::new(rom.prg_rom.clone())),
+            0 => Box::new(Mapper0::new(
+                prg_rom.clone(),
+                rom.chr_rom.clone(),
+                rom.mirroring,
+            )),
+
             _ => unimplemented!("[BUS] unsupported mapper {}", rom.mapper),
         };
 
@@ -57,15 +70,26 @@ impl<'a> Bus<'a> {
         self.mapper.read_prg_rom(addr)
     }
 
+    fn write_prg_rom(&mut self, addr: u16, data: u8) {
+        self.mapper.write_prg_rom(addr, data);
+    }
+
+    fn read_chr_rom(&self, addr: u16) -> u8 {
+        self.mapper.read_chr_rom(addr)
+    }
+
+    fn write_chr_rom(&mut self, addr: u16, data: u8) {
+        self.mapper.write_chr_rom(addr, data);
+    }
+
     pub fn tick(&mut self, cycles: u8) {
-        self.apu.dmc.reset_stall_cycles();
         for _ in 0..cycles {
             self.cycles += 1;
             self.apu.tick(self.cycles);
         }
-    
-        let new_frame = self.ppu.tick(cycles * 3, &mut self.frame);
-    
+
+        let new_frame = self.ppu.tick(cycles * 3, &mut self.frame, self.mapper.mirroring());
+
         if new_frame {
             (self.gameloop)(&self.frame, &self.ppu, &mut self.apu, &mut self.joypad1, &mut self.corruption);
         }
@@ -92,51 +116,45 @@ impl Mem for Bus<'_> {
     fn mem_read(&mut self, addr: u16) -> u8 {
         match addr {
             0x0000..=0x1FFF => {
+                // mirror down cpu vram
                 let mirror_down_addr = addr & 0b00000111_11111111;
                 self.cpu_vram[mirror_down_addr as usize]
             }
-
             0x2000 | 0x2001 | 0x2003 | 0x2005 | 0x2006 | 0x4014 => {
-                println!("[BUS] attempted to read from write-only PPU registers");
+                println!("[BUS] read from write-only ppu regs");
                 0
             }
-
             0x2002 => self.ppu.read_status(),
             0x2004 => self.ppu.read_oam_data(),
             0x2007 => self.ppu.read_data(),
             0x4015 => self.apu.read(),
             0x4016 => self.joypad1.read(),
-            0x4017 => 0, // ignore joypad 2
-
+            0x4017 => 0, // ignore joypad2
             0x2008..=0x3FFF => {
+                // mirror down ppu regs
                 let mirror_down_addr = addr & 0b00100000_00000111;
                 self.mem_read(mirror_down_addr)
             }
-
+            0x6000..=0x7FFF => self.mapper.read_prg_ram(addr - 0x6000),
             0x8000..=0xFFFF => self.read_prg_rom(addr),
-            
-            _ => {
-                //println!("[BUS] reading from unknown memory @ 0x{:04x}", addr);
-                0
-            }
+            _ => 0,
         }
     }
 
     fn mem_write(&mut self, addr: u16, data: u8) {
         let mut corrupted = data;
-
         if self.corruption != 0 {
             corrupted = corrupted.wrapping_add(rand::rng().random_range(0..self.corruption));
         }
-
         match addr {
             0x0000..=0x1FFF => {
+                // mirror down cpu vram
                 let mirror_down_addr = addr & 0b00000111_11111111;
                 self.cpu_vram[mirror_down_addr as usize] = data;
             }
             0x2000 => self.ppu.write_to_control(data),
             0x2001 => self.ppu.write_to_mask(corrupted),
-            0x2002 => println!("[BUS] attempted to write to PPU status"),
+            0x2002 => println!("[BUS] write to ppu status"),
             0x2003 => self.ppu.write_to_oam_address(data),
             0x2004 => self.ppu.write_to_oam_data(corrupted),
             0x2005 => self.ppu.write_to_scroll(data),
@@ -151,25 +169,25 @@ impl Mem for Bus<'_> {
             0x4017 => self.apu.set_frame_counter(corrupted, self.cycles),
             0x4016 => self.joypad1.write(data),
             0x4014 => {
+                // oam dma
                 let mut buffer: [u8; 256] = [0; 256];
                 let hi = (data as u16) << 8;
-
                 for i in 0..256u16 {
                     buffer[i as usize] = self.mem_read(hi + i);
                 }
-
                 self.ppu.write_oam_dma(&buffer);
             }
             0x2008..=0x3FFF => {
+                // mirror down ppu regs
                 let mirror_down_addr = addr & 0b00100000_00000111;
                 self.mem_write(mirror_down_addr, corrupted);
             }
+            0x6000..=0x7FFF => self.mapper.write_prg_ram(addr - 0x6000, data),
             0x8000..=0xFFFF => {
-                self.mapper.write_prg_rom(addr, corrupted);
+                // write to prg rom/ram via mapper
+                self.write_prg_rom(addr, data);
             }
-            _ => {
-                println!("[BUS] ignoring write to unknown memory @ 0x{:04x}", addr);
-            }
+            _ => println!("[BUS] ignoring write to unknown addr 0x{:04x}", addr),
         }
     }
 

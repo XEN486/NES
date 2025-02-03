@@ -7,10 +7,13 @@ pub mod filter;
 pub mod channels;
 
 use frame_counter::{FrameCounter, FrameCounterResult};
-use channels::{pulse::PulseChannel, triangle::TriangleChannel, noise::NoiseChannel, dmc::DMCChannel};
+use channels::{pulse::PulseChannel, triangle::TriangleChannel, noise::NoiseChannel};//, dmc::DMCChannel};
 
 use filter::FirstOrderFilter;
 use sweep::SweepNegationMode;
+
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub struct APU {
     pub buffer: Vec<i16>,
@@ -19,12 +22,12 @@ pub struct APU {
     pulse_1: PulseChannel,
     triangle: TriangleChannel,
     noise: NoiseChannel,
-    pub dmc: DMCChannel,
+    //pub dmc: DMCChannel,
     filters: [FirstOrderFilter; 3],
 }
 
 impl APU {
-    pub fn new(prg_rom: Vec<u8>) -> APU {
+    pub fn new(_prg_rom: Rc<RefCell<Vec<u8>>>) -> APU {
         APU {
             buffer: Vec::new(),
             frame_counter: FrameCounter::new(),
@@ -33,7 +36,7 @@ impl APU {
             pulse_1: PulseChannel::new(SweepNegationMode::TwosCompliment),
             triangle: TriangleChannel::new(),
             noise: NoiseChannel::new(),
-            dmc: DMCChannel::new(prg_rom),
+            //dmc: DMCChannel::new(prg_rom),
 
             filters: [
                 FirstOrderFilter::high_pass(44100.0, 90.0),
@@ -45,15 +48,15 @@ impl APU {
 
     pub fn read(&mut self) -> u8 {
         let mut result = 0;
-        if self.dmc.irq_flag {
-            result |= 0b1000_0000;
-        }
+        //if self.dmc.irq_flag {
+        //    result |= 0b1000_0000;
+        //}
         if self.frame_counter.prv_irq_flag {
             result |= 0b0100_0000;
         }
-        if self.dmc.playing() {
-            result |= 0b0001_0000;
-        }
+        //if self.dmc.playing() {
+        //    result |= 0b0001_0000;
+        //}
         if self.noise.playing() {
             result |= 0b0000_1000;
         }
@@ -88,8 +91,8 @@ impl APU {
         self.noise.write(addr, data);
     }
 
-    pub fn write_to_dmc(&mut self, addr: u16, data: u8) {
-        self.dmc.write(addr, data);
+    pub fn write_to_dmc(&mut self, _addr: u16, _data: u8) {
+        //self.dmc.write(addr, data);
     }
 
     pub fn set_status(&mut self, data: u8) {
@@ -97,7 +100,7 @@ impl APU {
         self.pulse_1.set_enabled(data & 0b0000_0010 != 0);
         self.triangle.set_enabled(data & 0b0000_0100 != 0);
         self.noise.set_enabled(data & 0b0000_1000 != 0);
-        self.dmc.set_enabled(data & 0b001_0000 != 0);
+        //self.dmc.set_enabled(data & 0b001_0000 != 0);
     }
 
     pub fn set_frame_counter(&mut self, data: u8, cycles: usize) {
@@ -136,7 +139,7 @@ impl APU {
             self.pulse_0.tick_sequencer();
             self.pulse_1.tick_sequencer();
             self.noise.tick_sequencer();
-            self.dmc.tick_sequencer();
+            //self.dmc.tick_sequencer();
         }
 
         let r = self.frame_counter.tick();
@@ -158,7 +161,8 @@ impl APU {
         let p1 = self.pulse_1.sample() as f64;
         let t = self.triangle.sample() as f64;
         let n = self.noise.sample() as f64;
-        let d = self.dmc.sample() as f64;
+        //let d = self.dmc.sample() as f64;
+        let d = 0.0;
 
         let pulse_out = 95.88 / ((8218.0 / (p0 + p1)) + 100.0);
         let tnd_out = 159.79 / ((1.0 / (t / 8227.0 + n / 12241.0 + d / 22638.0)) + 100.0);

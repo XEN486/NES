@@ -6,7 +6,7 @@ mod render;
 mod interrupt;
 mod joypad;
 mod apu;
-mod mapper;
+mod mappers;
 
 use bus::Bus;
 use cartridge::Rom;
@@ -65,7 +65,7 @@ fn main() -> Result<(), std::io::Error> {
                     pal_path = Some(args[i + 1].clone());
                     i += 1;
                 } else {
-                    panic!("Error: --palette requires a palette file path");
+                    panic!("--palette requires a palette file path");
                 }
             }
 
@@ -74,7 +74,7 @@ fn main() -> Result<(), std::io::Error> {
                     pc_start = Some(args[i + 1].clone());
                     i += 1;
                 } else {
-                    panic!("Error: --pc requires a hex value");
+                    panic!("--pc requires a hex value");
                 }
             }
 
@@ -238,7 +238,7 @@ fn main() -> Result<(), std::io::Error> {
 
     // setup timing
     let target_frame_duration: Duration = Duration::from_secs_f64(1.0 / target_fps as f64);
-    let cycles_per_frame: u32 = cpu_clock_hz / 60;
+    let cycles_per_frame: u32 = cpu_clock_hz / target_fps;
 
     // create a file if we are tracing the cpu
     let mut file = File::create("cpu.log")?;

@@ -274,7 +274,8 @@ impl<'a> CPU<'a> {
     }
 
     fn hlt(&mut self, _mode: &AddressingMode) -> bool {
-        panic!("[CPU] Halten sie!");
+        println!("[CPU] Halten sie!");
+        false
     }
 
     fn inc(&mut self, mode: &AddressingMode) -> bool {

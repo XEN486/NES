@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Mirroring {
     Vertical,
     Horizontal,
@@ -21,13 +21,6 @@ impl Rom {
         let mapper = (raw[7] & 0b1111_0000) | (raw[6] >> 4);
         let version = (raw[7] >> 2) & 0b11;
         
-        if version != 0 {
-            println!("[CARTRIDGE] iNES 2.0 detected. Unsupported, but some games should work. Using mapper {}.", mapper);
-            //return Err("[CART] only iNES 1.0 roms are supported!".to_string());
-        } else {
-            println!("[CARTRIDGE] iNES 1.0. Using mapper {}.", mapper)
-        }
-
         let four_screen = raw[6] & 0b1000 != 0;
         let vertical_mirroring = raw[6] & 0b1 != 0;
         let mirroring = match (four_screen, vertical_mirroring) {
@@ -35,6 +28,14 @@ impl Rom {
             (false, true) => Mirroring::Vertical,
             (false, false) => Mirroring::Horizontal,
         };
+
+        if version != 0 {
+            println!("[CARTRIDGE] iNES 2.0 detected. Unsupported, but some games should work. Using: Mapper {}, {:?} Mirroring", mapper, mirroring);
+            //return Err("[CART] only iNES 1.0 roms are supported!".to_string());
+        } else {
+            println!("[CARTRIDGE] iNES 1.0. Using: Mapper {}, {:?} mirroring", mapper, mirroring);
+        }
+
 
         let prg_rom_size = raw[4] as usize * 16384;
         let chr_rom_size = raw[5] as usize * 8192;

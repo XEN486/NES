@@ -127,14 +127,14 @@ impl PPU {
             }
             0x3000 ..= 0x3eff => unimplemented!("[PPU] address {:04x} shouldn't be used in reality", addr),
 
-            // Addresses $3F10/$3F14/$3F18/$3F1C are mirrors of $3F00/$3F04/$3F08/$3F0C
+            // addresses $3F10/$3F14/$3F18/$3F1C are mirrors of $3F00/$3F04/$3F08/$3F0C
             0x3f10 | 0x3f14 | 0x3f18 | 0x3f1c => {
                 let add_mirror = addr - 0x10;
-                self.palette_table[(add_mirror - 0x3f00) as usize % 32] = value;
+                self.palette_table[(add_mirror - 0x3f00) as usize & 31] = value;
             }
 
             0x3f00..=0x3fff => {
-                self.palette_table[(addr - 0x3f00) as usize % 32] = value;
+                self.palette_table[(addr - 0x3f00) as usize & 31] = value;
             }
 
             _ => unreachable!("[PPU] unexpected access to mirrored space {}", addr),
@@ -174,7 +174,8 @@ impl PPU {
         }
     }
 
-    pub fn tick(&mut self, cycles: u8, frame: &mut Frame) -> bool {
+    pub fn tick(&mut self, cycles: u8, frame: &mut Frame, mirroring: Mirroring) -> bool {
+        self.mirroring = mirroring;
         self.cycles += cycles as usize;
     
         if self.cycles >= 341 {

@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub struct Rect {
     pub x1: usize,
     pub y1: usize,
