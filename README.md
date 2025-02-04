@@ -1,7 +1,6 @@
 # pNES
 ![windows build](https://github.com/XEN486/NES/actions/workflows/windows.yml/badge.svg)
 ![linux build](https://github.com/XEN486/NES/actions/workflows/linux.yml/badge.svg)
-![macos build](https://github.com/XEN486/NES/actions/workflows/macos.yml/badge.svg)
 
 pNES is a small NES emulator written in Rust that I have been working on.
 ![donkey kong 3](images/title.png)
