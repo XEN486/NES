@@ -17,6 +17,7 @@ use joypad::JoypadButton;
 use sdl3::{event::Event, keyboard::Keycode, pixels::PixelFormat};
 use sdl3::sys::{pixels::SDL_PIXELFORMAT_RGB24, render::SDL_SetTextureScaleMode, surface::SDL_ScaleMode};
 
+use discord_rpc_client::Client as DiscordRPC;
 use rfd::FileDialog;
 
 use std::time::{Duration, Instant};
@@ -132,12 +133,40 @@ fn main() -> Result<(), std::io::Error> {
             .to_string()
     });
 
+    let rom_name = std::path::Path::new(&rom_path)
+        .file_name()
+        .expect("[MAIN] failed to unwrap path")
+        .to_string_lossy()
+        .to_string();
+
     // load palette
     let pal_path = pal_path.unwrap_or_else(|| "default.pal".to_string());
 
     if let Err(e) = render::palette::set_palette(&pal_path) {
         eprintln!("[MAIN] failed to set palette from '{}': {}", pal_path, e);
         return Err(e);
+    }
+    
+    // initialize drpc
+    let mut drpc = DiscordRPC::new(1336031322132578416);
+
+    drpc.on_ready(|_ctx| {
+        println!("[MAIN] discord RPC ready!");
+    });
+
+    drpc.on_error(|_ctx| {
+        eprintln!("[MAIN] an error occured in discord RPC");
+    });
+
+    drpc.start();
+    if let Err(err) = drpc.set_activity(|a| a
+        .state(format!("Playing \"{}\".", rom_name))
+        .assets(|ass| ass
+            .large_image("icon")
+            .large_text("pNES")
+        )
+    ) {
+        eprintln!("[MAIN] discord RPC error: {}", err);
     }
 
     // initialize SDL3
