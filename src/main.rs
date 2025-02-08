@@ -26,7 +26,7 @@ use std::env;
 use std::fs::File;
 use std::io::Write;
 
-fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
+fn get_button_from_keycode(keycode: &Keycode) -> Option<JoypadButton> {
     match keycode {
         Keycode::Down => Some(JoypadButton::Down),
         Keycode::Up => Some(JoypadButton::Up),
@@ -40,11 +40,22 @@ fn get_button(keycode: &Keycode) -> Option<JoypadButton> {
     }
 }
 
+fn get_button_from_joystick(button: u8) -> Option<JoypadButton> {
+    match button {
+        0 => Some(JoypadButton::A),
+        2 => Some(JoypadButton::B),
+        6 => Some(JoypadButton::Select),
+        7 => Some(JoypadButton::Start),
+        _ => None,
+    }
+}
+
 fn main() -> Result<(), std::io::Error> {
     // constants
     const WIDTH: u32 = 256;
     const HEIGHT: u32 = 240;
     const SCALE: u32 = 4;
+    const DEADZONE: i16 = 8000;
 
     // cpu timing
     let mut cpu_clock_hz: u32 = 1_789_773;
@@ -173,6 +184,18 @@ fn main() -> Result<(), std::io::Error> {
     let sdl_context = sdl3::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
+    let joystick_subsystem = sdl_context.joystick().unwrap();
+
+    // load first controller
+    let joystick_instances = joystick_subsystem.joysticks().unwrap();
+    let mut joystick: Option<sdl3::joystick::Joystick> = None;
+
+    for instance in joystick_instances {
+        if let Ok(joy) = joystick_subsystem.open(instance) {
+            joystick = Some(joy);
+            break;
+        }
+    }
     let window = video_subsystem
         .window("pNES", WIDTH * SCALE, HEIGHT * SCALE)
         .position_centered()
@@ -236,7 +259,7 @@ fn main() -> Result<(), std::io::Error> {
                             }
 
                             _ => {
-                                if let Some(button) = get_button(&key) {
+                                if let Some(button) = get_button_from_keycode(&key) {
                                     joypad.set_button_status(button, true);
                                 }
                             }
@@ -246,13 +269,50 @@ fn main() -> Result<(), std::io::Error> {
 
                 Event::KeyUp { keycode, .. } => {
                     if let Some(key) = keycode {
-                        if let Some(button) = get_button(&key) {
+                        if let Some(button) = get_button_from_keycode(&key) {
                             joypad.set_button_status(button, false);
                         }
                     }
                 }
 
-                _ => {}
+                Event::JoyButtonDown { button_idx, .. } => {
+                    if let Some(joypad_button) = get_button_from_joystick(button_idx) {
+                        joypad.set_button_status(joypad_button, true);
+                    }
+                }
+
+                Event::JoyButtonUp { button_idx, .. } => {
+                    if let Some(joypad_button) = get_button_from_joystick(button_idx) {
+                        joypad.set_button_status(joypad_button, false);
+                    }
+                }
+
+                _ => {
+                    if let Some(joy) = &joystick {
+                        let x_axis = joy.axis(0).unwrap_or(0); // X axis
+                        let y_axis = joy.axis(1).unwrap_or(0); // Y axis
+            
+                        // X axis
+                        if x_axis < -DEADZONE {
+                            joypad.set_button_status(JoypadButton::Left, true);
+                        } else if x_axis > DEADZONE {
+                            joypad.set_button_status(JoypadButton::Right, true);
+                        } else {
+                            joypad.set_button_status(JoypadButton::Left, false);
+                            joypad.set_button_status(JoypadButton::Right, false);
+                        }
+            
+                        // Y axis
+                        if y_axis < -DEADZONE {
+                            joypad.set_button_status(JoypadButton::Up, true);
+                        } else if y_axis > DEADZONE {
+                            joypad.set_button_status(JoypadButton::Down, true);
+                        } else {
+                            joypad.set_button_status(JoypadButton::Up, false);
+                            joypad.set_button_status(JoypadButton::Down, false);
+                        }
+                    }
+                }
             }
         }
     });

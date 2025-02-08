@@ -184,27 +184,24 @@ impl PPU {
             }
     
             self.cycles -= 341;
-    
-            // render after completing each scanline
-            render::render_scanline(self, frame, self.scanline as usize);
-    
             self.scanline += 1;
     
-            if self.scanline == 241 {
+            if self.scanline >= 241 && self.scanline != 262 {
                 self.status.set_vblank_status(true);
                 self.status.set_sprite_zero_hit(false);
     
                 if self.control.generate_vblank_nmi() {
                     self.nmi_interrupt = Some(1);
                 }
-            }
-    
-            if self.scanline >= 262 {
+            } else if self.scanline == 262 {
                 self.scanline = 0;
                 self.nmi_interrupt = None;
                 self.status.set_sprite_zero_hit(false);
                 self.status.reset_vblank_status();
                 return true; // trigger VBlank for gameloop
+            } else {            
+                // render the scanline
+                render::render_scanline(self, frame, self.scanline as usize);
             }
         }
         false
