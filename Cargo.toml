@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 bitflags = "2.8"
-sdl3 = "0.14.3"
+sdl3 = "0.14.8"
 rand = "0.9.0"
 bitfield = "0.18.1"
 rfd = "0.15.2"
