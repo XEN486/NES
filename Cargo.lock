@@ -1170,9 +1170,9 @@ checksum = "e1cf6437eb19a8f4a6cc0f7dca544973b0b78843adbfeb3683d1a94a0024a294"
 
 [[package]]
 name = "sdl3"
-version = "0.14.11"
+version = "0.14.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ab9fa9ed6942a7b0125ae65b98c9c5f69244783ec4bd1aa15c6650e4cc426e9"
+checksum = "0aa25a08a42df58baf97212e35f989cfe1b24a767aadfa09967cecca065a18de"
 dependencies = [
  "bitflags",
  "lazy_static",
