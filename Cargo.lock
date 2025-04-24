@@ -1020,9 +1020,9 @@ checksum = "6ea1a2d0a644769cc99faa24c3ad26b379b786fe7c36fd3c546254801650e6dd"
 
 [[package]]
 name = "sdl3"
-version = "0.14.22"
+version = "0.14.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "156ff51a9b5b08ce6d1e3d38e9a1a079c04f09e88cd003f58e76be7d30b0a1c6"
+checksum = "32937025fa7a6af8f0336b857fd8cfc64530ea9056a0c5be93829012727b28cc"
 dependencies = [
  "bitflags",
  "lazy_static",
@@ -1032,9 +1032,9 @@ dependencies = [
 
 [[package]]
 name = "sdl3-sys"
-version = "0.4.1+SDL3-3.2.0"
+version = "0.4.7+SDL3-3.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dbb92e547216ba46fd828a232ddb9687e9195358d9a9f184b819648ce612795c"
+checksum = "f0d16a8a3623a4cb39a3661c81d9d4c5fd77ada27fc056e320b3651bf7bde1b1"
 
 [[package]]
 name = "serde"
