@@ -8,7 +8,7 @@ bitflags = "2.9"
 sdl3 = "0.14.29"
 rand = "0.9.1"
 bitfield = "0.19.1"
-rfd = "0.15.3"
+rfd = "0.15.4"
 discord-rpc-client = "0.4.0"
 
 [target.'cfg(windows)'.build-dependencies]
