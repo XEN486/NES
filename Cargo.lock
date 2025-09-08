@@ -684,9 +684,9 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "libc"
-version = "0.2.169"
+version = "0.2.175"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5aba8db14291edd000dfcc4d620c7ebfb122c613afb886ca8803fa4e128a20a"
+checksum = "6a82ae493e598baaea5209805c49bbf2ea7de956d50d7da0da1164f9c6d28543"
 
 [[package]]
 name = "linux-raw-sys"
@@ -1019,9 +1019,9 @@ checksum = "6ea1a2d0a644769cc99faa24c3ad26b379b786fe7c36fd3c546254801650e6dd"
 
 [[package]]
 name = "sdl3"
-version = "0.14.29"
+version = "0.14.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1dd35c26ed8f7ebb741a8deb044acced69b915ecbbfb7b2a986d6e92a01e0fd"
+checksum = "00e2a92b001023557b72e649c3a4e2152692cbc85acd234fd1ca58ac158accac"
 dependencies = [
  "bitflags",
  "lazy_static",
