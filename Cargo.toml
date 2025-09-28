@@ -7,7 +7,7 @@ edition = "2021"
 bitflags = "2.9"
 sdl3 = "0.14.42"
 rand = "0.9.1"
-bitfield = "0.19.1"
+bitfield = "0.19.2"
 rfd = "0.15.3"
 discord-rpc-client = "0.4.0"
 
